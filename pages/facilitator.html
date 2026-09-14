@@ -346,7 +346,7 @@
 
               <div class="form-group">
                 <label class="form-label" for="facTrackInput">Specialization Track</label>
-                <input type="text" id="facTrackInput" class="form-input" required>
+                <input type="text" id="facTrackInput" class="form-input" value="Cloud Admin" readonly style="opacity: 0.85; background: var(--bg-card);">
               </div>
 
               <button type="submit" class="btn-primary" style="width: auto; padding: 11px 24px;">
@@ -473,6 +473,12 @@
             <option value="Lab Manual">Lab Manual</option>
             <option value="Cheatsheet">Cloud Command Cheatsheet</option>
           </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="matFileInput">Attach Document File (.pdf, .doc, .docx, .ppt, .zip, .txt, etc.)</label>
+          <input type="file" id="matFileInput" class="form-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.zip,.png,.jpg,.jpeg">
+          <div id="matSelectedFileInfo" style="font-size: 12px; color: var(--blue-light); margin-top: 6px; display: none;"></div>
         </div>
 
         <div class="form-group">
@@ -617,28 +623,66 @@
       });
 
       // Upload Material Form
-      document.getElementById('uploadMaterialForm').addEventListener('submit', (e) => {
+      document.getElementById('uploadMaterialForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const title = document.getElementById('matTitleInput').value.trim();
+        const titleInput = document.getElementById('matTitleInput');
+        let title = titleInput.value.trim();
         const courseSelect = document.getElementById('matCourseSelect');
         const courseId = courseSelect.value;
         const courseTitle = courseSelect.options[courseSelect.selectedIndex].text;
         const docType = document.getElementById('matTypeSelect').value;
         const desc = document.getElementById('matDescInput').value.trim();
+        const fileInput = document.getElementById('matFileInput');
+        const file = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+
+        let fileData = null;
+        let fileName = file ? file.name : (title + '.pdf');
+        let fileSize = file ? CloudStore.formatBytes(file.size) : '2.5 MB';
+
+        if (file) {
+          try {
+            fileData = await CloudStore.readFileAsDataURL(file);
+          } catch (err) {
+            console.error('Error reading document:', err);
+          }
+        }
+
+        if (!title && file) {
+          title = file.name.replace(/\.[^/.]+$/, '');
+        }
 
         CloudStore.addMaterial({
-          title,
+          title: title || 'Course Learning Document',
           courseId,
           courseTitle,
           docType,
           description: desc,
-          fileSize: (Math.random() * 3 + 1.2).toFixed(1) + ' MB'
+          fileName,
+          fileSize,
+          fileData
         });
 
-        showToast('Course material uploaded successfully!', 'success');
+        showToast(`Course material "${title}" uploaded successfully!`, 'success');
         closeModal('modalUploadMaterial');
         document.getElementById('uploadMaterialForm').reset();
+        document.getElementById('matSelectedFileInfo').style.display = 'none';
         refreshFacilitatorView();
+      });
+
+      // Preview filename on file select
+      document.getElementById('matFileInput').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        const infoEl = document.getElementById('matSelectedFileInfo');
+        if (file) {
+          infoEl.textContent = `📎 Selected File: ${file.name} (${CloudStore.formatBytes(file.size)})`;
+          infoEl.style.display = 'block';
+          const titleInput = document.getElementById('matTitleInput');
+          if (!titleInput.value) {
+            titleInput.value = file.name.replace(/\.[^/.]+$/, '');
+          }
+        } else {
+          infoEl.style.display = 'none';
+        }
       });
 
       // Review Submission Form (NO grading)
@@ -658,7 +702,7 @@
       if (currentUser) {
         document.getElementById('facNameInput').value = currentUser.name;
         document.getElementById('facEmailInput').value = currentUser.email;
-        document.getElementById('facTrackInput').value = currentUser.cloudTrack || 'AWS Architecture';
+        document.getElementById('facTrackInput').value = 'Cloud Admin';
       }
 
       document.getElementById('facProfileForm').addEventListener('submit', (e) => {
@@ -702,6 +746,11 @@
         } else {
           showToast(res.message, 'error');
         }
+      });
+
+      // Multi-tab real-time sync
+      CloudStore.onSync(() => {
+        refreshFacilitatorView();
       });
     });
 
@@ -801,11 +850,20 @@
           <td style="font-size: 12px; color: var(--text-muted);">${escapeHtml(m.fileSize)}</td>
           <td style="font-size: 12px; color: var(--text-dim);">${escapeHtml(m.uploadDate)}</td>
           <td>
+            <button class="btn-sm btn-approve" onclick="downloadMaterialFile('${m.id}')" style="margin-right: 6px;">⬇️ Download</button>
             <button class="btn-sm btn-danger-outline" onclick="deleteMaterialEntry('${m.id}')">Delete</button>
           </td>
         </tr>
       `).join('');
     }
+
+    window.downloadMaterialFile = function(id) {
+      const m = CloudStore.getMaterials().find(x => x.id === id);
+      if (m) {
+        CloudStore.downloadFile(m.fileName || (m.title + '.pdf'), m.fileData);
+        showToast(`Downloading "${m.title}"...`, 'info');
+      }
+    };
 
     window.deleteMaterialEntry = function(id) {
       if (confirm('Delete this material document?')) {
@@ -900,7 +958,8 @@
           <td style="font-size: 12px; color: var(--text-muted);">${escapeHtml(s.submittedAt)}</td>
           <td>
             ${s.repoUrl ? `<a href="${escapeHtml(s.repoUrl)}" target="_blank" style="color: var(--blue-light); font-size: 12px;">🔗 Repository</a><br>` : ''}
-            <span style="font-size: 11px; color: var(--text-dim);">📁 ${escapeHtml(s.fileName || 'workbook_upload.zip')}</span>
+            <span style="font-size: 11px; color: var(--text-dim);">📁 ${escapeHtml(s.fileName || 'workbook_upload.zip')}</span><br>
+            <button class="btn-sm btn-approve" onclick="downloadStudentSubmissionDoc('${s.id}')" style="padding: 2px 7px; font-size: 11px; margin-top: 4px;">⬇️ Download Doc</button>
           </td>
           <td>
             <span class="badge ${s.status === 'Reviewed' ? 'badge-approved' : (s.status === 'Needs Revision' ? 'badge-rejected' : 'badge-pending')}">
@@ -926,13 +985,22 @@
       document.getElementById('revAssTitle').textContent = sub.assessmentTitle;
       document.getElementById('revStudentNotes').innerHTML = `
         <strong>Student Notes:</strong> ${escapeHtml(sub.notes || 'None provided.')}<br>
-        <strong>Artifact:</strong> ${escapeHtml(sub.fileName || 'N/A')}<br>
+        <strong>Attached Document:</strong> ${escapeHtml(sub.fileName || 'N/A')}
+        ${sub.fileName ? ` <button type="button" class="btn-sm btn-approve" onclick="downloadStudentSubmissionDoc('${sub.id}')" style="padding: 2px 7px; font-size: 11px; margin-left: 8px;">⬇️ Download File</button>` : ''}<br>
         ${sub.repoUrl ? `<strong>Repo Link:</strong> <a href="${escapeHtml(sub.repoUrl)}" target="_blank" style="color: var(--blue-light);">${escapeHtml(sub.repoUrl)}</a>` : ''}
       `;
       document.getElementById('revStatusSelect').value = sub.status || 'Under Review';
       document.getElementById('revRemarksInput').value = sub.facilitatorRemarks || '';
 
       openModal('modalReviewSubmission');
+    };
+
+    window.downloadStudentSubmissionDoc = function(subId) {
+      const sub = CloudStore.getSubmissions().find(s => s.id === subId);
+      if (sub) {
+        CloudStore.downloadFile(sub.fileName || 'student_submission.zip', sub.fileData);
+        showToast(`Downloading "${sub.fileName || 'submission file'}"...`, 'info');
+      }
     };
 
     // Course dropdown selects

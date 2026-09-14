@@ -255,7 +255,7 @@
 
               <div class="form-group">
                 <label class="form-label" for="studTrackInput">Primary Cloud Track</label>
-                <input type="text" id="studTrackInput" class="form-input" required>
+                <input type="text" id="studTrackInput" class="form-input" value="Cloud Admin" readonly style="opacity: 0.85; background: var(--bg-card);">
               </div>
 
               <button type="submit" class="btn-primary" style="width: auto; padding: 11px 24px;">
@@ -331,8 +331,10 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="submitFileName">File Attachment Name</label>
-          <input type="text" id="submitFileName" class="form-input" placeholder="e.g. vpc_topology_and_terraform.zip" required>
+          <label class="form-label" for="submitFileInput">Upload Work Document (.pdf, .doc, .docx, .zip, .png, etc.)</label>
+          <input type="file" id="submitFileInput" class="form-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.zip,.png,.jpg,.jpeg">
+          <div id="submitSelectedFileInfo" style="font-size: 12px; color: var(--blue-light); margin-top: 6px; display: none;"></div>
+          <input type="hidden" id="submitFileName">
         </div>
 
         <div class="form-group">
@@ -407,12 +409,25 @@
       document.getElementById('materialCourseFilter').addEventListener('change', renderMaterials);
 
       // Submit task form
-      document.getElementById('submitTaskForm').addEventListener('submit', (e) => {
+      document.getElementById('submitTaskForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const assessmentId = document.getElementById('submitAssessmentId').value;
         const repoUrl = document.getElementById('submitRepoUrl').value.trim();
-        const fileName = document.getElementById('submitFileName').value.trim();
         const notes = document.getElementById('submitNotes').value.trim();
+        const fileInput = document.getElementById('submitFileInput');
+        const file = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+
+        let fileData = null;
+        let fileName = file ? file.name : (document.getElementById('submitFileName').value.trim() || 'workbook_deliverable.pdf');
+        let fileSize = file ? CloudStore.formatBytes(file.size) : '1.2 MB';
+
+        if (file) {
+          try {
+            fileData = await CloudStore.readFileAsDataURL(file);
+          } catch (err) {
+            console.error('Error reading deliverable document:', err);
+          }
+        }
 
         const assessment = CloudStore.getAssessments().find(a => a.id === assessmentId);
 
@@ -424,20 +439,36 @@
           studentEmail: currentUser.email,
           repoUrl: repoUrl,
           fileName: fileName,
+          fileSize: fileSize,
+          fileData: fileData,
           notes: notes
         });
 
-        showToast('Workbook deliverable submitted successfully!', 'success');
+        showToast('Workbook deliverable & document submitted successfully!', 'success');
         closeModal('modalSubmitTask');
         document.getElementById('submitTaskForm').reset();
+        document.getElementById('submitSelectedFileInfo').style.display = 'none';
         refreshStudentView();
+      });
+
+      // Show file info when student selects a document
+      document.getElementById('submitFileInput').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        const infoEl = document.getElementById('submitSelectedFileInfo');
+        if (file) {
+          infoEl.textContent = `📎 Selected: ${file.name} (${CloudStore.formatBytes(file.size)})`;
+          infoEl.style.display = 'block';
+          document.getElementById('submitFileName').value = file.name;
+        } else {
+          infoEl.style.display = 'none';
+        }
       });
 
       // Student Profile Form
       if (currentUser) {
         document.getElementById('studNameInput').value = currentUser.name;
         document.getElementById('studEmailInput').value = currentUser.email;
-        document.getElementById('studTrackInput').value = currentUser.cloudTrack || 'AWS Solutions Architect';
+        document.getElementById('studTrackInput').value = 'Cloud Admin';
       }
 
       document.getElementById('studentProfileForm').addEventListener('submit', (e) => {
@@ -481,6 +512,11 @@
         } else {
           showToast(res.message, 'error');
         }
+      });
+
+      // Multi-tab real-time sync
+      CloudStore.onSync(() => {
+        refreshStudentView();
       });
     });
 
@@ -535,7 +571,8 @@
             <td style="font-size: 12px; color: var(--text-muted);">${escapeHtml(s.submittedAt)}</td>
             <td>
               ${s.repoUrl ? `<a href="${escapeHtml(s.repoUrl)}" target="_blank" style="color: var(--blue-light); font-size: 12px;">🔗 Repo</a> ` : ''}
-              <span style="font-size: 11px; color: var(--text-dim);">📁 ${escapeHtml(s.fileName || 'file.zip')}</span>
+              <span style="font-size: 11px; color: var(--text-dim);">📁 ${escapeHtml(s.fileName || 'file.zip')}</span><br>
+              <button class="btn-sm btn-approve" onclick="downloadSubmissionFile('${s.id}')" style="padding: 2px 7px; font-size: 11px; margin-top: 3px;">⬇️ Download Doc</button>
             </td>
             <td>
               <span class="badge ${s.status === 'Reviewed' ? 'badge-approved' : 'badge-pending'}">${escapeHtml(s.status)}</span>
@@ -592,9 +629,11 @@
     }
 
     // Document Viewer
+    let currentViewingDoc = null;
     window.openDocumentViewer = function(docId) {
       const doc = CloudStore.getMaterials().find(m => m.id === docId);
       if (!doc) return;
+      currentViewingDoc = doc;
 
       document.getElementById('viewDocTitle').textContent = doc.title;
       document.getElementById('viewDocCourse').textContent = doc.courseTitle;
@@ -620,8 +659,21 @@
     };
 
     window.simulateDownload = function() {
-      showToast('Document downloaded to your local device!', 'success');
+      if (currentViewingDoc) {
+        CloudStore.downloadFile(currentViewingDoc.fileName || (currentViewingDoc.title + '.pdf'), currentViewingDoc.fileData);
+        showToast(`Downloading "${currentViewingDoc.title}"...`, 'success');
+      } else {
+        showToast('Document downloaded to your local device!', 'success');
+      }
       closeModal('modalViewDocument');
+    };
+
+    window.downloadSubmissionFile = function(subId) {
+      const s = CloudStore.getSubmissions().find(item => item.id === subId);
+      if (s) {
+        CloudStore.downloadFile(s.fileName || 'my_workbook_submission.zip', s.fileData);
+        showToast(`Downloading "${s.fileName || 'submission'}"...`, 'info');
+      }
     };
 
     // Available Tasks to Submit
@@ -687,7 +739,8 @@
           <td style="font-size: 12px; color: var(--text-muted);">${escapeHtml(s.submittedAt)}</td>
           <td>
             ${s.repoUrl ? `<a href="${escapeHtml(s.repoUrl)}" target="_blank" style="color: var(--blue-light); font-size: 12px;">🔗 Repo</a><br>` : ''}
-            <span style="font-size: 11px; color: var(--text-dim);">📁 ${escapeHtml(s.fileName || 'workbook.zip')}</span>
+            <span style="font-size: 11px; color: var(--text-dim);">📁 ${escapeHtml(s.fileName || 'workbook.zip')}</span><br>
+            <button class="btn-sm btn-approve" onclick="downloadSubmissionFile('${s.id}')" style="padding: 2px 7px; font-size: 11px; margin-top: 3px;">⬇️ Download Doc</button>
           </td>
           <td>
             <span class="badge ${s.status === 'Reviewed' ? 'badge-approved' : (s.status === 'Needs Revision' ? 'badge-rejected' : 'badge-pending')}">

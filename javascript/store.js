@@ -1,6 +1,7 @@
 /**
  * CloudLearn LMS - Central Data Store & State Management
- * Persistent via localStorage with pre-seeded data for Cloud Learners
+ * Persistent via localStorage + sessionStorage with pre-seeded data for Cloud Learners.
+ * Multi-user session isolated, multi-tab broadcast synced, and GitHub Pages cloud-sync ready.
  */
 
 (function () {
@@ -12,10 +13,11 @@
     SUBMISSIONS: 'cloudlms_submissions',
     PASSWORD_REQUESTS: 'cloudlms_password_requests',
     CURRENT_USER: 'cloudlms_current_user',
-    THEME: 'cloudlms_theme'
+    THEME: 'cloudlms_theme',
+    REMOTE_SYNC_ENDPOINT: 'cloudlms_sync_endpoint'
   };
 
-  // Pre-seeded Users
+  // Pre-seeded Users with unified "Cloud Admin" track
   const DEFAULT_USERS = [
     {
       id: 'u_admin',
@@ -25,7 +27,7 @@
       role: 'admin',
       status: 'Active',
       joinedDate: '2024-01-10',
-      cloudTrack: 'Administration'
+      cloudTrack: 'Cloud Admin'
     },
     {
       id: 'u_sarah',
@@ -35,7 +37,7 @@
       role: 'teacher',
       status: 'Active',
       joinedDate: '2024-02-01',
-      cloudTrack: 'AWS Solutions & Architecture'
+      cloudTrack: 'Cloud Admin'
     },
     {
       id: 'u_david',
@@ -45,7 +47,7 @@
       role: 'teacher',
       status: 'Active',
       joinedDate: '2024-02-15',
-      cloudTrack: 'Kubernetes & DevOps'
+      cloudTrack: 'Cloud Admin'
     },
     {
       id: 'u_emily',
@@ -55,7 +57,7 @@
       role: 'student',
       status: 'Active',
       joinedDate: '2024-03-01',
-      cloudTrack: 'AWS Solutions Architect'
+      cloudTrack: 'Cloud Admin'
     },
     {
       id: 'u_marcus',
@@ -65,7 +67,7 @@
       role: 'student',
       status: 'Active',
       joinedDate: '2024-03-05',
-      cloudTrack: 'DevOps & Containers'
+      cloudTrack: 'Cloud Admin'
     },
     {
       id: 'u_sophia',
@@ -75,7 +77,7 @@
       role: 'student',
       status: 'Active',
       joinedDate: '2024-03-12',
-      cloudTrack: 'Azure Cloud Fundamentals'
+      cloudTrack: 'Cloud Admin'
     },
     {
       id: 'u_alex',
@@ -85,7 +87,7 @@
       role: 'student',
       status: 'Active',
       joinedDate: '2024-03-20',
-      cloudTrack: 'GCP Cloud Infrastructure'
+      cloudTrack: 'Cloud Admin'
     },
     {
       id: 'u_chloe',
@@ -95,55 +97,51 @@
       role: 'student',
       status: 'Active',
       joinedDate: '2024-04-02',
-      cloudTrack: 'Cloud Security & IAM'
+      cloudTrack: 'Cloud Admin'
     }
   ];
 
-  // Pre-seeded Courses
+  // Pre-seeded Courses with unified "Cloud Admin" track
   const DEFAULT_COURSES = [
     {
       id: 'c1',
       code: 'AWS-SAA-C03',
       title: 'AWS Certified Solutions Architect Associate',
-      track: 'AWS',
+      track: 'Cloud Admin',
       facilitatorId: 'u_sarah',
       facilitatorName: 'Dr. Sarah Johnson',
       enrolledCount: 5,
-      duration: '10 Weeks',
-      description: 'Master VPC architecture, EC2 autoscaling, S3 lifecycle policies, IAM zero-trust access, and fault-tolerant cloud design.'
+      duration: '10 Weeks'
     },
     {
       id: 'c2',
       code: 'GCP-ACE-201',
       title: 'Google Cloud Platform (GCP) Cloud Engineer',
-      track: 'GCP',
+      track: 'Cloud Admin',
       facilitatorId: 'u_david',
       facilitatorName: 'David Chen',
       enrolledCount: 4,
-      duration: '8 Weeks',
-      description: 'Deploy real-world infrastructure using gcloud CLI, Compute Engine, Google Kubernetes Engine (GKE), and BigQuery.'
+      duration: '8 Weeks'
     },
     {
       id: 'c3',
       code: 'AZ-104',
       title: 'Microsoft Azure Administrator & Fundamentals',
-      track: 'Azure',
+      track: 'Cloud Admin',
       facilitatorId: 'u_sarah',
       facilitatorName: 'Dr. Sarah Johnson',
       enrolledCount: 4,
-      duration: '8 Weeks',
-      description: 'Implement storage accounts, virtual networks, Azure Active Directory tenant management, and governance RBAC.'
+      duration: '8 Weeks'
     },
     {
       id: 'c4',
       code: 'K8S-CKA',
       title: 'Cloud DevOps with Docker & Kubernetes',
-      track: 'DevOps',
+      track: 'Cloud Admin',
       facilitatorId: 'u_david',
       facilitatorName: 'David Chen',
       enrolledCount: 5,
-      duration: '12 Weeks',
-      description: 'Hands-on containerization, multi-pod microservices, Helm package management, CI/CD automation, and cloud deployments.'
+      duration: '12 Weeks'
     }
   ];
 
@@ -152,20 +150,24 @@
     {
       id: 'm1',
       courseId: 'c1',
-      courseTitle: 'AWS Certified Solutions Architect',
+      courseTitle: 'AWS Certified Solutions Architect Associate',
       title: 'AWS Well-Architected Framework Whitepaper',
       docType: 'PDF Document',
       fileSize: '4.2 MB',
+      fileName: 'AWS_Well_Architected_Whitepaper.pdf',
+      fileData: null,
       uploadDate: '2024-03-10',
       description: 'Comprehensive guide covering Reliability, Security, Cost Optimization, Operational Excellence, and Performance Efficiency pillars.'
     },
     {
       id: 'm2',
       courseId: 'c1',
-      courseTitle: 'AWS Certified Solutions Architect',
+      courseTitle: 'AWS Certified Solutions Architect Associate',
       title: 'Terraform Multi-Tier VPC Reference Architecture',
-      docType: 'Architecture Code Spec',
+      docType: 'Architecture Spec',
       fileSize: '1.8 MB',
+      fileName: 'Terraform_MultiTier_VPC.tf',
+      fileData: null,
       uploadDate: '2024-03-14',
       description: 'Production-ready Infrastructure as Code template detailing Public/Private subnet splits, NAT Gateways, and route tables.'
     },
@@ -174,18 +176,22 @@
       courseId: 'c4',
       courseTitle: 'Cloud DevOps with Docker & Kubernetes',
       title: 'Kubernetes Pod Manifests & Kubectl Cheatsheet',
-      docType: 'Lab Reference Guide',
+      docType: 'Lab Manual',
       fileSize: '2.5 MB',
+      fileName: 'Kubernetes_Lab_Manual.pdf',
+      fileData: null,
       uploadDate: '2024-03-18',
       description: 'Essential kubectl commands, YAML manifest structures for Deployments, Services, ConfigMaps, and Ingress routing rules.'
     },
     {
       id: 'm4',
       courseId: 'c3',
-      courseTitle: 'Microsoft Azure Administrator',
+      courseTitle: 'Microsoft Azure Administrator & Fundamentals',
       title: 'Azure RBAC and Governance Blueprint',
       docType: 'PDF Document',
       fileSize: '3.1 MB',
+      fileName: 'Azure_RBAC_Governance.pdf',
+      fileData: null,
       uploadDate: '2024-03-22',
       description: 'Enterprise access controls guide, policy assignment definitions, management group hierarchies, and secure identity federation.'
     },
@@ -196,21 +202,23 @@
       title: 'GCP VPC Peering & Cloud NAT Lab Guide',
       docType: 'Lab Manual',
       fileSize: '2.9 MB',
+      fileName: 'GCP_VPC_Peering_Guide.pdf',
+      fileData: null,
       uploadDate: '2024-03-25',
       description: 'Hands-on steps for configuring custom VPC networks, firewall rules, Cloud Router, and external gateway connectivity.'
     }
   ];
 
-  // Pre-seeded Assessments & Workbooks (Submissions only - NO grading)
+  // Pre-seeded Assessments & Workbooks
   const DEFAULT_ASSESSMENTS = [
     {
       id: 'a1',
       courseId: 'c1',
-      courseTitle: 'AWS Certified Solutions Architect',
+      courseTitle: 'AWS Certified Solutions Architect Associate',
       title: 'Lab Workbook 1: Design Multi-AZ High-Availability VPC',
       type: 'Workbook',
       dueDate: '2026-09-25',
-      instructions: 'Submit your network topology diagram, CIDR block allocation rationale, and complete Terraform/CloudFormation code.'
+      instructions: 'Submit your network topology diagram, CIDR block allocation rationale, and complete Terraform/CloudFormation code or document.'
     },
     {
       id: 'a2',
@@ -224,7 +232,7 @@
     {
       id: 'a3',
       courseId: 'c3',
-      courseTitle: 'Microsoft Azure Administrator',
+      courseTitle: 'Microsoft Azure Administrator & Fundamentals',
       title: 'Lab Workbook 2: Azure Virtual Network Peering & Security Rules',
       type: 'Workbook',
       dueDate: '2026-10-02',
@@ -232,7 +240,7 @@
     }
   ];
 
-  // Pre-seeded Submissions (NO grading)
+  // Pre-seeded Submissions
   const DEFAULT_SUBMISSIONS = [
     {
       id: 'sub_1',
@@ -245,6 +253,8 @@
       repoUrl: 'https://github.com/emily-cloud/aws-vpc-terraform',
       notes: 'Configured 2 public subnets and 2 private subnets across us-east-1a and us-east-1b with elastic IP NAT Gateways.',
       fileName: 'aws_vpc_multi_az_submission.zip',
+      fileSize: '1.2 MB',
+      fileData: null,
       status: 'Reviewed',
       facilitatorRemarks: 'Excellent architecture diagram and clean Terraform modularization. Approved with commendations.'
     },
@@ -259,6 +269,8 @@
       repoUrl: 'https://github.com/marcus-v/k8s-ingress-app',
       notes: 'Included cluster ingress yaml, secret configurations, and load balancer annotations.',
       fileName: 'k8s_deployment_manifests.yaml',
+      fileSize: '45 KB',
+      fileData: null,
       status: 'Under Review',
       facilitatorRemarks: 'Manifests received. Checking service loadbalancer ingress setup.'
     }
@@ -292,7 +304,61 @@
     }
   ];
 
-  // Store Initialization Helper
+  // Cross-Tab Broadcast Channel & Local Listeners
+  const syncChannel = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('cloudlearn_lms_channel') : null;
+  const syncListeners = [];
+
+  function notifySync(type, data) {
+    if (syncChannel) {
+      try {
+        syncChannel.postMessage({ type, data, timestamp: Date.now() });
+      } catch (e) {}
+    }
+    syncListeners.forEach(fn => {
+      try { fn(type, data); } catch (e) {}
+    });
+  }
+
+  if (syncChannel) {
+    syncChannel.onmessage = (event) => {
+      const { type, data } = event.data || {};
+      syncListeners.forEach(fn => {
+        try { fn(type, data); } catch (e) {}
+      });
+    };
+  }
+
+  window.addEventListener('storage', (e) => {
+    if (e.key && e.key.startsWith('cloudlms_')) {
+      syncListeners.forEach(fn => {
+        try { fn('STORAGE_CHANGED', { key: e.key }); } catch (err) {}
+      });
+    }
+  });
+
+  // Helper read/write functions
+  function get(key) {
+    try {
+      const data = localStorage.getItem(key);
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      console.error('Storage Read Error', e);
+      return [];
+    }
+  }
+
+  function set(key, val, shouldNotify = true, notifyType = 'DATA_UPDATED') {
+    try {
+      localStorage.setItem(key, JSON.stringify(val));
+      if (shouldNotify) {
+        notifySync(notifyType, { key, val });
+      }
+    } catch (e) {
+      console.error('Storage Write Error', e);
+    }
+  }
+
+  // Store Initialization & Migration
   function initStore() {
     if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
       localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(DEFAULT_USERS));
@@ -315,46 +381,66 @@
     if (!localStorage.getItem(STORAGE_KEYS.THEME)) {
       localStorage.setItem(STORAGE_KEYS.THEME, 'dark');
     }
+
+    // Unify all tracks to 'Cloud Admin' for existing users and courses
+    try {
+      const courses = get(STORAGE_KEYS.COURSES);
+      let courseUpdated = false;
+      courses.forEach(c => {
+        if (c.track !== 'Cloud Admin') {
+          c.track = 'Cloud Admin';
+          courseUpdated = true;
+        }
+      });
+      if (courseUpdated) {
+        localStorage.setItem(STORAGE_KEYS.COURSES, JSON.stringify(courses));
+      }
+
+      const users = get(STORAGE_KEYS.USERS);
+      let userUpdated = false;
+      users.forEach(u => {
+        if (u.cloudTrack !== 'Cloud Admin') {
+          u.cloudTrack = 'Cloud Admin';
+          userUpdated = true;
+        }
+      });
+      if (userUpdated) {
+        localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+      }
+    } catch (e) {
+      console.warn('Migration warning:', e);
+    }
   }
 
   initStore();
 
-  // Helper read/write functions
-  function get(key) {
-    try {
-      const data = localStorage.getItem(key);
-      return data ? JSON.parse(data) : [];
-    } catch (e) {
-      console.error('Storage Read Error', e);
-      return [];
-    }
-  }
-
-  function set(key, val) {
-    try {
-      localStorage.setItem(key, JSON.stringify(val));
-    } catch (e) {
-      console.error('Storage Write Error', e);
-    }
-  }
-
   // Public Store API
   window.CloudStore = {
-    // Current User / Session
+    // Current User / Session with multi-user isolation
     getCurrentUser: function () {
       try {
-        const u = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
-        return u ? JSON.parse(u) : null;
+        const sessionUser = sessionStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+        if (sessionUser) return JSON.parse(sessionUser);
+        const localUser = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+        return localUser ? JSON.parse(localUser) : null;
       } catch (e) {
         return null;
       }
     },
     setCurrentUser: function (user) {
-      localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
+      try {
+        sessionStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
+        localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
+      } catch (e) {}
     },
     logout: function () {
+      sessionStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
       localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
-      window.location.href = '../index.html';
+      if (window.location.pathname.includes('/pages/')) {
+        window.location.href = '../index.html';
+      } else {
+        window.location.href = 'index.html';
+      }
     },
 
     // Theme Management
@@ -373,6 +459,16 @@
       document.body.setAttribute('data-theme', current);
     },
 
+    // Sync Event Listener for Multi-Tab & Real-Time Sync
+    onSync: function (callback) {
+      if (typeof callback === 'function') {
+        syncListeners.push(callback);
+      }
+    },
+    broadcast: function (type, data) {
+      notifySync(type, data);
+    },
+
     // Users
     getUsers: function () {
       return get(STORAGE_KEYS.USERS);
@@ -388,8 +484,9 @@
       user.id = 'u_' + Date.now();
       user.joinedDate = new Date().toISOString().split('T')[0];
       user.status = 'Active';
+      user.cloudTrack = 'Cloud Admin';
       users.push(user);
-      set(STORAGE_KEYS.USERS, users);
+      set(STORAGE_KEYS.USERS, users, true, 'USERS_CHANGED');
       return user;
     },
     updateUser: function (id, updates) {
@@ -397,8 +494,7 @@
       const idx = users.findIndex(u => u.id === id);
       if (idx !== -1) {
         users[idx] = { ...users[idx], ...updates };
-        set(STORAGE_KEYS.USERS, users);
-        // If updating current user
+        set(STORAGE_KEYS.USERS, users, true, 'USERS_CHANGED');
         const current = this.getCurrentUser();
         if (current && current.id === id) {
           this.setCurrentUser(users[idx]);
@@ -410,7 +506,7 @@
     deleteUser: function (id) {
       let users = this.getUsers();
       users = users.filter(u => u.id !== id);
-      set(STORAGE_KEYS.USERS, users);
+      set(STORAGE_KEYS.USERS, users, true, 'USERS_CHANGED');
     },
 
     // Courses
@@ -424,14 +520,15 @@
       const courses = this.getCourses();
       course.id = 'c_' + Date.now();
       course.enrolledCount = 0;
+      course.track = 'Cloud Admin';
       courses.push(course);
-      set(STORAGE_KEYS.COURSES, courses);
+      set(STORAGE_KEYS.COURSES, courses, true, 'COURSES_CHANGED');
       return course;
     },
     deleteCourse: function (id) {
       let courses = this.getCourses();
       courses = courses.filter(c => c.id !== id);
-      set(STORAGE_KEYS.COURSES, courses);
+      set(STORAGE_KEYS.COURSES, courses, true, 'COURSES_CHANGED');
     },
 
     // Materials (Documents)
@@ -447,16 +544,16 @@
       material.id = 'm_' + Date.now();
       material.uploadDate = new Date().toISOString().split('T')[0];
       materials.push(material);
-      set(STORAGE_KEYS.MATERIALS, materials);
+      set(STORAGE_KEYS.MATERIALS, materials, true, 'MATERIALS_CHANGED');
       return material;
     },
     deleteMaterial: function (id) {
       let materials = this.getMaterials();
       materials = materials.filter(m => m.id !== id);
-      set(STORAGE_KEYS.MATERIALS, materials);
+      set(STORAGE_KEYS.MATERIALS, materials, true, 'MATERIALS_CHANGED');
     },
 
-    // Assessments & Workbooks (NO grading)
+    // Assessments & Workbooks
     getAssessments: function () {
       return get(STORAGE_KEYS.ASSESSMENTS);
     },
@@ -468,16 +565,16 @@
       const assessments = this.getAssessments();
       item.id = 'a_' + Date.now();
       assessments.push(item);
-      set(STORAGE_KEYS.ASSESSMENTS, assessments);
+      set(STORAGE_KEYS.ASSESSMENTS, assessments, true, 'ASSESSMENTS_CHANGED');
       return item;
     },
     deleteAssessment: function (id) {
       let assessments = this.getAssessments();
       assessments = assessments.filter(a => a.id !== id);
-      set(STORAGE_KEYS.ASSESSMENTS, assessments);
+      set(STORAGE_KEYS.ASSESSMENTS, assessments, true, 'ASSESSMENTS_CHANGED');
     },
 
-    // Submissions (NO grading - status and remarks only)
+    // Submissions
     getSubmissions: function () {
       return get(STORAGE_KEYS.SUBMISSIONS);
     },
@@ -489,14 +586,13 @@
     },
     addSubmission: function (sub) {
       const subs = this.getSubmissions();
-      // Remove any prior submission for same student & assessment to update
       const filtered = subs.filter(s => !(s.assessmentId === sub.assessmentId && s.studentId === sub.studentId));
       sub.id = 'sub_' + Date.now();
       sub.submittedAt = new Date().toLocaleString();
       sub.status = 'Submitted';
       sub.facilitatorRemarks = 'Submission received. Awaiting facilitator review.';
       filtered.push(sub);
-      set(STORAGE_KEYS.SUBMISSIONS, filtered);
+      set(STORAGE_KEYS.SUBMISSIONS, filtered, true, 'SUBMISSIONS_CHANGED');
       return sub;
     },
     reviewSubmission: function (subId, status, remarks) {
@@ -506,19 +602,18 @@
         subs[idx].status = status || 'Reviewed';
         subs[idx].facilitatorRemarks = remarks || '';
         subs[idx].reviewedAt = new Date().toLocaleString();
-        set(STORAGE_KEYS.SUBMISSIONS, subs);
+        set(STORAGE_KEYS.SUBMISSIONS, subs, true, 'SUBMISSIONS_CHANGED');
         return subs[idx];
       }
       return null;
     },
 
-    // Password Request Approval Workflow
+    // Password Requests
     getPasswordRequests: function () {
       return get(STORAGE_KEYS.PASSWORD_REQUESTS);
     },
     getUserPasswordRequest: function (userId) {
       const requests = this.getPasswordRequests();
-      // Look for latest request by this user
       const userReqs = requests.filter(r => r.userId === userId);
       if (userReqs.length === 0) return null;
       return userReqs[userReqs.length - 1];
@@ -542,7 +637,7 @@
       };
 
       requests.push(newReq);
-      set(STORAGE_KEYS.PASSWORD_REQUESTS, requests);
+      set(STORAGE_KEYS.PASSWORD_REQUESTS, requests, true, 'PASSWORDS_CHANGED');
       return newReq;
     },
     approvePasswordRequest: function (requestId, adminName) {
@@ -552,7 +647,7 @@
         requests[idx].status = 'APPROVED';
         requests[idx].reviewedAt = new Date().toLocaleString();
         requests[idx].reviewedBy = adminName || 'Admin User';
-        set(STORAGE_KEYS.PASSWORD_REQUESTS, requests);
+        set(STORAGE_KEYS.PASSWORD_REQUESTS, requests, true, 'PASSWORDS_CHANGED');
         return requests[idx];
       }
       return null;
@@ -564,7 +659,7 @@
         requests[idx].status = 'REJECTED';
         requests[idx].reviewedAt = new Date().toLocaleString();
         requests[idx].reviewedBy = adminName || 'Admin User';
-        set(STORAGE_KEYS.PASSWORD_REQUESTS, requests);
+        set(STORAGE_KEYS.PASSWORD_REQUESTS, requests, true, 'PASSWORDS_CHANGED');
         return requests[idx];
       }
       return null;
@@ -577,19 +672,96 @@
       if (!this.hasPasswordChangePermission(userId)) {
         return { success: false, message: 'Password change permission has not been approved by Admin.' };
       }
-      // Update user password
       this.updateUser(userId, { password: newPassword });
 
-      // Mark request as COMPLETED so permission resets
       const requests = this.getPasswordRequests();
       const req = requests.find(r => r.userId === userId && r.status === 'APPROVED');
       if (req) {
         req.status = 'COMPLETED';
         req.completedAt = new Date().toLocaleString();
-        set(STORAGE_KEYS.PASSWORD_REQUESTS, requests);
+        set(STORAGE_KEYS.PASSWORD_REQUESTS, requests, true, 'PASSWORDS_CHANGED');
       }
 
       return { success: true, message: 'Password successfully changed!' };
+    },
+
+    // File Utilities: Reading & Downloading Actual Documents
+    readFileAsDataURL: function (file) {
+      return new Promise((resolve, reject) => {
+        if (!file) {
+          resolve(null);
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (err) => reject(err);
+        reader.readAsDataURL(file);
+      });
+    },
+
+    downloadFile: function (fileName, fileData, fallbackType = 'text/plain') {
+      const name = fileName || 'cloudlearn_document.txt';
+      if (fileData && typeof fileData === 'string' && fileData.startsWith('data:')) {
+        const link = document.createElement('a');
+        link.href = fileData;
+        link.download = name;
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(() => document.body.removeChild(link), 100);
+      } else {
+        // Create an informative demonstration document if no binary stream is present
+        const sampleText = `==========================================================\nCloudLearn LMS - Document Download\n==========================================================\nFile Name: ${name}\nGenerated: ${new Date().toLocaleString()}\nPlatform: CloudLearn LMS (Cloud Admin Track)\n==========================================================\nThis document was successfully retrieved from CloudLearn LMS storage.\n`;
+        const blob = new Blob([sampleText], { type: fallbackType });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = name.endsWith('.txt') ? name : name + (name.includes('.') ? '' : '.txt');
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(() => {
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }, 120);
+      }
+    },
+
+    formatBytes: function (bytes) {
+      if (!bytes || bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    },
+
+    // Multi-User GitHub Pages Data Export & Import
+    exportAllData: function () {
+      const exportObj = {
+        version: '1.0',
+        exportedAt: new Date().toISOString(),
+        users: this.getUsers(),
+        courses: this.getCourses(),
+        materials: this.getMaterials(),
+        assessments: this.getAssessments(),
+        submissions: this.getSubmissions(),
+        passwordRequests: this.getPasswordRequests()
+      };
+      return JSON.stringify(exportObj, null, 2);
+    },
+
+    importAllData: function (jsonStr) {
+      try {
+        const parsed = JSON.parse(jsonStr);
+        if (parsed.users) localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(parsed.users));
+        if (parsed.courses) localStorage.setItem(STORAGE_KEYS.COURSES, JSON.stringify(parsed.courses));
+        if (parsed.materials) localStorage.setItem(STORAGE_KEYS.MATERIALS, JSON.stringify(parsed.materials));
+        if (parsed.assessments) localStorage.setItem(STORAGE_KEYS.ASSESSMENTS, JSON.stringify(parsed.assessments));
+        if (parsed.submissions) localStorage.setItem(STORAGE_KEYS.SUBMISSIONS, JSON.stringify(parsed.submissions));
+        if (parsed.passwordRequests) localStorage.setItem(STORAGE_KEYS.PASSWORD_REQUESTS, JSON.stringify(parsed.passwordRequests));
+        notifySync('ALL_DATA_IMPORTED', {});
+        return { success: true, message: 'All CloudLearn LMS data successfully synced and updated!' };
+      } catch (e) {
+        return { success: false, message: 'Invalid data format: ' + e.message };
+      }
     }
   };
 })();

@@ -289,11 +289,7 @@
                 <div class="form-group">
                   <label class="form-label" for="courseTrackSelect">Cloud Track / Category</label>
                   <select id="courseTrackSelect" class="form-select" required>
-                    <option value="AWS">Amazon Web Services (AWS)</option>
-                    <option value="Azure">Microsoft Azure</option>
-                    <option value="GCP">Google Cloud Platform (GCP)</option>
-                    <option value="DevOps">Cloud-Native & DevOps (Kubernetes/Docker)</option>
-                    <option value="Multi-Cloud">Multi-Cloud Architecture</option>
+                    <option value="Cloud Admin" selected>Cloud Admin</option>
                   </select>
                 </div>
 
@@ -310,12 +306,7 @@
                 </div>
               </div>
 
-              <div class="form-group" style="margin-top: 10px;">
-                <label class="form-label" for="courseDescInput">Course Syllabus & Description</label>
-                <textarea id="courseDescInput" class="form-textarea" rows="3" placeholder="Outline the modules, learning goals, and hands-on lab requirements..." required></textarea>
-              </div>
-
-              <button type="submit" class="btn-primary btn-orange" style="width: auto; padding: 12px 28px;">
+              <button type="submit" class="btn-primary btn-orange" style="width: auto; padding: 12px 28px; margin-top: 14px;">
                 + Create Course
               </button>
             </form>
@@ -375,6 +366,22 @@
                 Save Changes
               </button>
             </form>
+
+            <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border-color);">
+              <h3 style="font-size: 16px; margin-bottom: 8px; color: var(--text-heading);">🌐 GitHub Pages Multi-User Sync & Backup</h3>
+              <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+                Share system state across different devices or backup your platform data.
+              </p>
+              <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <button type="button" class="btn-sm btn-approve" onclick="exportPlatformData()" style="padding: 10px 18px;">
+                  📥 Export LMS Data (JSON)
+                </button>
+                <button type="button" class="btn-sm btn-approve" onclick="document.getElementById('importDataFileInput').click()" style="padding: 10px 18px; background: rgba(59, 130, 246, 0.15); color: var(--blue-light); border-color: rgba(59, 130, 246, 0.3);">
+                  📤 Import LMS Data (JSON)
+                </button>
+                <input type="file" id="importDataFileInput" accept=".json" style="display: none;" onchange="importPlatformData(event)">
+              </div>
+            </div>
           </div>
         </section>
 
@@ -409,13 +416,12 @@
           <select id="newUserRole" class="form-select" required>
             <option value="student">Student (Cloud Learner)</option>
             <option value="teacher">Facilitator (Teacher)</option>
-            <option value="admin">Administrator</option>
           </select>
         </div>
 
         <div class="form-group">
           <label class="form-label" for="newUserTrack">Cloud Track / Specialization</label>
-          <input type="text" id="newUserTrack" class="form-input" placeholder="e.g. AWS Solutions Architect" required>
+          <input type="text" id="newUserTrack" class="form-input" value="Cloud Admin" readonly style="background: var(--bg-card); opacity: 0.9;">
         </div>
 
         <div class="form-group">
@@ -489,16 +495,14 @@
         const facId = facSelect.value;
         const facName = facSelect.options[facSelect.selectedIndex].text;
         const duration = document.getElementById('courseDurationInput').value.trim();
-        const desc = document.getElementById('courseDescInput').value.trim();
 
         CloudStore.addCourse({
           title: title,
           code: code,
-          track: track,
+          track: track || 'Cloud Admin',
           facilitatorId: facId,
           facilitatorName: facName,
-          duration: duration,
-          description: desc
+          duration: duration
         });
 
         showToast(`Course "${title}" created successfully!`, 'success');
@@ -519,6 +523,11 @@
 
         CloudStore.updateUser(currentUser.id, { name, email });
         showToast('Admin profile successfully updated.', 'success');
+        refreshAll();
+      });
+
+      // Multi-tab real-time sync
+      CloudStore.onSync(() => {
         refreshAll();
       });
     });
@@ -590,7 +599,7 @@
           <div class="course-card-body">
             <div class="course-code">${escapeHtml(c.code)}</div>
             <h3 class="course-title">${escapeHtml(c.title)}</h3>
-            <p class="course-desc">${escapeHtml(c.description)}</p>
+            ${c.description ? `<p class="course-desc">${escapeHtml(c.description)}</p>` : ''}
           </div>
           <div class="course-meta">
             <span>👨‍🏫 ${escapeHtml(c.facilitatorName)}</span>
@@ -730,7 +739,7 @@
           <div class="course-card-body">
             <div class="course-code">${escapeHtml(c.code)}</div>
             <h3 class="course-title">${escapeHtml(c.title)}</h3>
-            <p class="course-desc">${escapeHtml(c.description)}</p>
+            ${c.description ? `<p class="course-desc">${escapeHtml(c.description)}</p>` : ''}
           </div>
           <div class="course-meta">
             <span>👨‍🏫 ${escapeHtml(c.facilitatorName)}</span>
@@ -739,6 +748,36 @@
         </div>
       `).join('');
     }
+
+    // Export & Import Data Handlers
+    window.exportPlatformData = function () {
+      const dataStr = CloudStore.exportAllData();
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `cloudlearn_backup_${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 150);
+      showToast('LMS platform data exported successfully!', 'success');
+    };
+
+    window.importPlatformData = function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const result = CloudStore.importAllData(event.target.result);
+        if (result.success) {
+          showToast(result.message, 'success');
+          refreshAll();
+        } else {
+          showToast(result.message, 'error');
+        }
+      };
+      reader.readAsText(file);
+    };
 
     window.deleteCourseEntry = function(courseId) {
       if (confirm('Are you sure you want to remove this course?')) {
