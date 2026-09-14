@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facilitator Portal - CloudLearn LMS</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body data-theme="dark">
+
+  <div class="app-container">
+    <!-- Sidebar (Wireframe Image 2) -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <span>Cloud<span class="orange">Learn</span> <span class="blue">LMS</span></span>
+        </div>
+        <span class="role-pill teacher">FACILITATOR</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a class="nav-link active" data-section="section-dashboard" data-title="Dashboard Overview">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a class="nav-link" data-section="section-courses" data-title="My Courses">
+          <span class="nav-icon">📚</span>
+          <span>Courses</span>
+        </a>
+        <a class="nav-link" data-section="section-students" data-title="My Students">
+          <span class="nav-icon">👥</span>
+          <span>My Student</span>
+        </a>
+        <a class="nav-link" data-section="section-assessments" data-title="Assessment & Workbook">
+          <span class="nav-icon">📝</span>
+          <span>Assessment & Workbook</span>
+        </a>
+        <a class="nav-link" data-section="section-settings" data-title="Settings & Password Change">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="signout-btn" type="button">
+          <span class="nav-icon">🚪</span>
+          <span>Sign Out</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+      <header class="top-header">
+        <h1 class="page-title">Dashboard Overview</h1>
+
+        <div class="header-actions">
+          <button class="theme-pill-btn" type="button">
+            <span class="theme-indicator-icon"></span>
+            <span>Theme</span>
+          </button>
+
+          <div class="user-profile-badge">
+            <span class="user-name-text">Dr. Sarah Johnson</span>
+            <div class="user-avatar-circle">SJ</div>
+          </div>
+        </div>
+      </header>
+
+      <main class="content-body">
+
+        <!-- ========================================================
+             1. DASHBOARD SECTION (Wireframe Image 2)
+             ======================================================== -->
+        <section id="section-dashboard" class="app-section active">
+          <!-- Metric cards (Image 2) -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon-wrap courses">📚</div>
+              <div>
+                <div class="stat-value" id="dashFacCourses">0</div>
+                <div class="stat-label">My Courses</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon-wrap students">👥</div>
+              <div>
+                <div class="stat-value" id="dashFacStudents">0</div>
+                <div class="stat-label">Total Students</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon-wrap workbooks">📝</div>
+              <div>
+                <div class="stat-value" id="dashFacAssessments">0</div>
+                <div class="stat-label">Assessments & Workbooks</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon-wrap users">📬</div>
+              <div>
+                <div class="stat-value" id="dashFacSubmissions">0</div>
+                <div class="stat-label">Student Submissions</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Action Buttons Row (Image 2) -->
+          <div class="quick-actions-grid">
+            <div class="action-card" onclick="openModal('modalCreateAssessment')">
+              <span class="action-icon">📝</span>
+              <h3>Create Assessment & Workbook</h3>
+              <p>Assign practical cloud labs, architecture tasks, and workbooks</p>
+            </div>
+
+            <div class="action-card" onclick="openModal('modalUploadMaterial')">
+              <span class="action-icon">📄</span>
+              <h3>Upload Course Material</h3>
+              <p>Add whitepapers, architecture specs, and lab manuals</p>
+            </div>
+
+            <div class="action-card" onclick="navigateToSection('section-assessments')">
+              <span class="action-icon">🔍</span>
+              <h3>Review Submissions</h3>
+              <p>Inspect student work, code repos, and leave feedback remarks</p>
+            </div>
+          </div>
+
+          <!-- Recent Submissions Overview Table (NO grading) -->
+          <div class="content-panel" style="margin-top: 28px;">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">
+                  <span class="highlight-dot"></span>
+                  Recent Student Workbook Submissions
+                </h2>
+                <p class="panel-subtitle">Latest lab submissions awaiting review</p>
+              </div>
+              <button class="btn-sm btn-approve" onclick="navigateToSection('section-assessments')">
+                View & Review All &rarr;
+              </button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>Assessment / Workbook</th>
+                    <th>Submitted At</th>
+                    <th>Attachment / Link</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="dashRecentSubsTable">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             2. COURSES SECTION
+             ======================================================== -->
+        <section id="section-courses" class="app-section">
+          <div class="content-panel" style="margin-bottom: 24px;">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Assigned Cloud Curricula</h2>
+                <p class="panel-subtitle">Courses where you are designated as Lead Facilitator</p>
+              </div>
+              <button class="btn-primary btn-orange" style="width: auto; padding: 9px 18px; font-size: 13px;" onclick="openModal('modalUploadMaterial')">
+                + Add Course Material
+              </button>
+            </div>
+
+            <div class="cards-grid" id="facCoursesGrid">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+
+          <!-- Course Documents List for Facilitator's Courses -->
+          <div class="content-panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Uploaded Learning Materials</h2>
+                <p class="panel-subtitle">Documents, whitepapers, and guides accessible to enrolled cloud learners</p>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Document Title</th>
+                    <th>Course</th>
+                    <th>Type</th>
+                    <th>File Size</th>
+                    <th>Uploaded Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="facMaterialsTable">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             3. MY STUDENT SECTION
+             ======================================================== -->
+        <section id="section-students" class="app-section">
+          <div class="content-panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Enrolled Cloud Students</h2>
+                <p class="panel-subtitle">Track learner participation, track progress, and lab submissions</p>
+              </div>
+
+              <div class="panel-controls">
+                <div class="search-bar">
+                  <span class="search-icon">🔍</span>
+                  <input type="text" id="studentSearchInput" placeholder="Filter student name or email...">
+                </div>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Student Name</th>
+                    <th>Email Address</th>
+                    <th>Enrolled Track</th>
+                    <th>Workbooks Submitted</th>
+                    <th>Status</th>
+                    <th>Contact</th>
+                  </tr>
+                </thead>
+                <tbody id="facStudentsTable">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             4. ASSESSMENT & WORKBOOK SECTION (Review Submissions, NO grading)
+             ======================================================== -->
+        <section id="section-assessments" class="app-section">
+          <!-- Sub Navigation Tabs -->
+          <div class="auth-tabs" style="max-width: 440px; margin-bottom: 24px;">
+            <button class="auth-tab-btn active" id="subtabAssessments" onclick="switchAssessmentSubTab('manage')">
+              Manage Tasks & Workbooks
+            </button>
+            <button class="auth-tab-btn" id="subtabSubmissions" onclick="switchAssessmentSubTab('submissions')">
+              Review Submissions (<span id="submissionsCountBadge">0</span>)
+            </button>
+          </div>
+
+          <!-- Sub Tab 1: Manage Assessments & Workbooks -->
+          <div id="subtabPaneManage">
+            <div class="content-panel">
+              <div class="panel-header">
+                <div>
+                  <h2 class="panel-title">Active Assessments & Workbooks</h2>
+                  <p class="panel-subtitle">Cloud architecture assignments and hands-on lab workbooks</p>
+                </div>
+                <button class="btn-primary btn-orange" style="width: auto; padding: 9px 18px; font-size: 13px;" onclick="openModal('modalCreateAssessment')">
+                  + Create Assessment / Workbook
+                </button>
+              </div>
+
+              <div class="cards-grid" id="facAssessmentsGrid">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub Tab 2: Review Submissions (NO grading) -->
+          <div id="subtabPaneSubmissions" style="display: none;">
+            <div class="content-panel">
+              <div class="panel-header">
+                <div>
+                  <h2 class="panel-title">Student Submissions Review</h2>
+                  <p class="panel-subtitle">Review submitted workbooks, provide feedback remarks, and update status (No grading)</p>
+                </div>
+              </div>
+
+              <div class="table-responsive">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>Student</th>
+                      <th>Assessment / Workbook</th>
+                      <th>Submitted On</th>
+                      <th>Work Link / File</th>
+                      <th>Status</th>
+                      <th>Facilitator Remarks</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="facSubmissionsReviewTable">
+                    <!-- Injected via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             5. SETTINGS AND PASSWORD CHANGE (Must get permission first!)
+             ======================================================== -->
+        <section id="section-settings" class="app-section">
+          <div class="content-panel" style="max-width: 800px;">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Facilitator Profile & Security Settings</h2>
+                <p class="panel-subtitle">Update your profile information and manage password change permissions</p>
+              </div>
+            </div>
+
+            <!-- Profile Info Form -->
+            <form id="facProfileForm" style="margin-bottom: 36px;">
+              <div class="form-group">
+                <label class="form-label" for="facNameInput">Full Name</label>
+                <input type="text" id="facNameInput" class="form-input" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="facEmailInput">Email Address</label>
+                <input type="email" id="facEmailInput" class="form-input" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="facTrackInput">Specialization Track</label>
+                <input type="text" id="facTrackInput" class="form-input" required>
+              </div>
+
+              <button type="submit" class="btn-primary" style="width: auto; padding: 11px 24px;">
+                Save Profile
+              </button>
+            </form>
+
+            <hr style="border: none; border-top: 1px solid var(--border-color); margin-bottom: 30px;">
+
+            <!-- Password Change Section with ADMIN APPROVAL WORKFLOW -->
+            <div>
+              <h3 style="font-size: 18px; font-weight: 700; color: var(--text-heading); margin-bottom: 8px;">
+                Password Change Authorization
+              </h3>
+              <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
+                As a security policy, facilitators and students must receive administrator approval before updating their account password.
+              </p>
+
+              <!-- Dynamic Permission Banner -->
+              <div class="permission-box" id="passwordPermissionBanner">
+                <!-- Injected via JS based on status -->
+              </div>
+
+              <!-- Unlocked Password Change Form (Only visible when APPROVED) -->
+              <div id="unlockedPasswordFormWrap" style="display: none;">
+                <form id="changePasswordForm">
+                  <div class="form-group">
+                    <label class="form-label" for="newFacPassword">New Password</label>
+                    <input type="password" id="newFacPassword" class="form-input" placeholder="Enter new strong password" required autocomplete="new-password">
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="confirmFacPassword">Confirm New Password</label>
+                    <input type="password" id="confirmFacPassword" class="form-input" placeholder="Confirm new password" required autocomplete="new-password">
+                  </div>
+
+                  <button type="submit" class="btn-primary btn-orange" style="width: auto; padding: 12px 28px;">
+                    Update Password Now
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <footer class="app-footer">
+        &copy; 2026 CloudLearn LMS. Facilitator Portal.
+      </footer>
+    </div>
+  </div>
+
+  <!-- Modal: Create Assessment & Workbook -->
+  <div class="modal-overlay" id="modalCreateAssessment">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeModal('modalCreateAssessment')">&times;</button>
+      <h3 class="modal-title">Create Assessment & Workbook</h3>
+      <p class="modal-subtitle">Assign a practical cloud scenario or lab workbook to students</p>
+
+      <form id="createAssessmentForm">
+        <div class="form-group">
+          <label class="form-label" for="assTitleInput">Task / Workbook Title</label>
+          <input type="text" id="assTitleInput" class="form-input" placeholder="e.g. Lab Workbook 3: CloudWatch & Prometheus Monitoring" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="assCourseSelect">Course</label>
+          <select id="assCourseSelect" class="form-select" required>
+            <!-- Injected via JS -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="assTypeSelect">Type</label>
+          <select id="assTypeSelect" class="form-select" required>
+            <option value="Workbook">Hands-on Lab Workbook</option>
+            <option value="Assessment">Technical Assessment</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="assDueDateInput">Submission Due Date</label>
+          <input type="date" id="assDueDateInput" class="form-input" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="assInstructionsInput">Instructions & Submission Requirements</label>
+          <textarea id="assInstructionsInput" class="form-textarea" rows="4" placeholder="Detail the deliverables: e.g. architecture diagram, code repository link, and verification logs..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary btn-orange">
+          Publish Assessment & Workbook
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Upload Course Material -->
+  <div class="modal-overlay" id="modalUploadMaterial">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeModal('modalUploadMaterial')">&times;</button>
+      <h3 class="modal-title">Upload Course Material</h3>
+      <p class="modal-subtitle">Provide study guides, architecture specs, and reference documents</p>
+
+      <form id="uploadMaterialForm">
+        <div class="form-group">
+          <label class="form-label" for="matTitleInput">Document Title</label>
+          <input type="text" id="matTitleInput" class="form-input" placeholder="e.g. AWS Multi-Region Disaster Recovery Whitepaper" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="matCourseSelect">Course</label>
+          <select id="matCourseSelect" class="form-select" required>
+            <!-- Injected via JS -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="matTypeSelect">Document Type</label>
+          <select id="matTypeSelect" class="form-select" required>
+            <option value="PDF Document">PDF Document</option>
+            <option value="Architecture Spec">Architecture Spec & Blueprint</option>
+            <option value="Lab Manual">Lab Manual</option>
+            <option value="Cheatsheet">Cloud Command Cheatsheet</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="matDescInput">Summary Description</label>
+          <textarea id="matDescInput" class="form-textarea" rows="3" placeholder="Brief summary of what learners will study in this document..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary btn-orange">
+          Upload Material
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Review Submission (NO grading) -->
+  <div class="modal-overlay" id="modalReviewSubmission">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeModal('modalReviewSubmission')">&times;</button>
+      <h3 class="modal-title">Review Student Submission</h3>
+      <p class="modal-subtitle">Assess the student's deliverables and record feedback remarks</p>
+
+      <form id="reviewSubmissionForm">
+        <input type="hidden" id="revSubId">
+        
+        <div class="form-group">
+          <label class="form-label">Student</label>
+          <div id="revStudentName" style="font-weight: 700; color: var(--text-heading);"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Workbook / Assessment</label>
+          <div id="revAssTitle" style="color: var(--blue-light); font-size: 13.5px;"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Student Notes & Repo</label>
+          <div id="revStudentNotes" style="font-size: 13px; color: var(--text-muted); background: var(--bg-input); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="revStatusSelect">Review Status</label>
+          <select id="revStatusSelect" class="form-select" required>
+            <option value="Under Review">Under Review</option>
+            <option value="Reviewed">Reviewed & Approved</option>
+            <option value="Needs Revision">Needs Revision</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="revRemarksInput">Facilitator Feedback Remarks</label>
+          <textarea id="revRemarksInput" class="form-textarea" rows="4" placeholder="Enter remarks on student's architecture, configurations, and answers..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary btn-orange">
+          Save Review
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Request Password Permission -->
+  <div class="modal-overlay" id="modalRequestPassword">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeModal('modalRequestPassword')">&times;</button>
+      <h3 class="modal-title">Request Password Change Permission</h3>
+      <p class="modal-subtitle">Submit a request to the system administrator to unlock password change</p>
+
+      <form id="requestPasswordForm">
+        <div class="form-group">
+          <label class="form-label" for="reqReasonInput">Reason for Password Change</label>
+          <textarea id="reqReasonInput" class="form-textarea" rows="3" placeholder="e.g. Routine credential rotation or updating account security..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary btn-orange">
+          Submit Request to Admin
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../javascript/store.js"></script>
+  <script src="../javascript/app.js"></script>
+  <script>
+    const currentUser = checkSession('teacher');
+
+    function navigateToSection(secId) {
+      const link = document.querySelector(`.sidebar-nav .nav-link[data-section="${secId}"]`);
+      if (link) link.click();
+    }
+
+    function switchAssessmentSubTab(tab) {
+      const btnManage = document.getElementById('subtabAssessments');
+      const btnSubs = document.getElementById('subtabSubmissions');
+      const paneManage = document.getElementById('subtabPaneManage');
+      const paneSubs = document.getElementById('subtabPaneSubmissions');
+
+      if (tab === 'submissions') {
+        btnManage.classList.remove('active');
+        btnSubs.classList.add('active');
+        paneManage.style.display = 'none';
+        paneSubs.style.display = 'block';
+      } else {
+        btnSubs.classList.remove('active');
+        btnManage.classList.add('active');
+        paneSubs.style.display = 'none';
+        paneManage.style.display = 'block';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initSectionNavigation('section-dashboard');
+      refreshFacilitatorView();
+
+      // Student search listener
+      document.getElementById('studentSearchInput').addEventListener('input', renderStudentsTable);
+
+      // Create Assessment Form
+      document.getElementById('createAssessmentForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = document.getElementById('assTitleInput').value.trim();
+        const courseSelect = document.getElementById('assCourseSelect');
+        const courseId = courseSelect.value;
+        const courseTitle = courseSelect.options[courseSelect.selectedIndex].text;
+        const type = document.getElementById('assTypeSelect').value;
+        const dueDate = document.getElementById('assDueDateInput').value;
+        const instructions = document.getElementById('assInstructionsInput').value.trim();
+
+        CloudStore.addAssessment({
+          title,
+          courseId,
+          courseTitle,
+          type,
+          dueDate,
+          instructions
+        });
+
+        showToast('Assessment & Workbook created successfully!', 'success');
+        closeModal('modalCreateAssessment');
+        document.getElementById('createAssessmentForm').reset();
+        refreshFacilitatorView();
+      });
+
+      // Upload Material Form
+      document.getElementById('uploadMaterialForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = document.getElementById('matTitleInput').value.trim();
+        const courseSelect = document.getElementById('matCourseSelect');
+        const courseId = courseSelect.value;
+        const courseTitle = courseSelect.options[courseSelect.selectedIndex].text;
+        const docType = document.getElementById('matTypeSelect').value;
+        const desc = document.getElementById('matDescInput').value.trim();
+
+        CloudStore.addMaterial({
+          title,
+          courseId,
+          courseTitle,
+          docType,
+          description: desc,
+          fileSize: (Math.random() * 3 + 1.2).toFixed(1) + ' MB'
+        });
+
+        showToast('Course material uploaded successfully!', 'success');
+        closeModal('modalUploadMaterial');
+        document.getElementById('uploadMaterialForm').reset();
+        refreshFacilitatorView();
+      });
+
+      // Review Submission Form (NO grading)
+      document.getElementById('reviewSubmissionForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const subId = document.getElementById('revSubId').value;
+        const status = document.getElementById('revStatusSelect').value;
+        const remarks = document.getElementById('revRemarksInput').value.trim();
+
+        CloudStore.reviewSubmission(subId, status, remarks);
+        showToast('Review remarks recorded successfully!', 'success');
+        closeModal('modalReviewSubmission');
+        refreshFacilitatorView();
+      });
+
+      // Profile Form
+      if (currentUser) {
+        document.getElementById('facNameInput').value = currentUser.name;
+        document.getElementById('facEmailInput').value = currentUser.email;
+        document.getElementById('facTrackInput').value = currentUser.cloudTrack || 'AWS Architecture';
+      }
+
+      document.getElementById('facProfileForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('facNameInput').value.trim();
+        const email = document.getElementById('facEmailInput').value.trim();
+        const track = document.getElementById('facTrackInput').value.trim();
+
+        CloudStore.updateUser(currentUser.id, { name, email, cloudTrack: track });
+        showToast('Facilitator profile updated.', 'success');
+        refreshFacilitatorView();
+      });
+
+      // Password Request Form
+      document.getElementById('requestPasswordForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const reason = document.getElementById('reqReasonInput').value.trim();
+        CloudStore.createPasswordRequest(currentUser.id, reason);
+        showToast('Password change request sent to Administrator for approval.', 'success');
+        closeModal('modalRequestPassword');
+        document.getElementById('requestPasswordForm').reset();
+        refreshPasswordAuthorizationSection();
+      });
+
+      // Update Password Form (Unlocked after approval)
+      document.getElementById('changePasswordForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const pwd = document.getElementById('newFacPassword').value;
+        const confirmPwd = document.getElementById('confirmFacPassword').value;
+
+        if (pwd !== confirmPwd) {
+          showToast('Passwords do not match.', 'error');
+          return;
+        }
+
+        const res = CloudStore.changePasswordWithPermission(currentUser.id, pwd);
+        if (res.success) {
+          showToast('Password updated successfully! You can now use your new password.', 'success');
+          document.getElementById('changePasswordForm').reset();
+          refreshPasswordAuthorizationSection();
+        } else {
+          showToast(res.message, 'error');
+        }
+      });
+    });
+
+    function refreshFacilitatorView() {
+      renderDashboard();
+      renderCourses();
+      renderMaterials();
+      renderStudentsTable();
+      renderAssessments();
+      renderSubmissions();
+      populateCourseSelects();
+      refreshPasswordAuthorizationSection();
+    }
+
+    // Dashboard calculations
+    function renderDashboard() {
+      const myCourses = CloudStore.getCoursesForFacilitator(currentUser.id);
+      const allStudents = CloudStore.getUsers().filter(u => u.role === 'student');
+      const allAssessments = CloudStore.getAssessments();
+      const allSubmissions = CloudStore.getSubmissions();
+
+      document.getElementById('dashFacCourses').textContent = myCourses.length;
+      document.getElementById('dashFacStudents').textContent = allStudents.length;
+      document.getElementById('dashFacAssessments').textContent = allAssessments.length;
+      document.getElementById('dashFacSubmissions').textContent = allSubmissions.length;
+
+      // Recent submissions table
+      const recentTable = document.getElementById('dashRecentSubsTable');
+      if (allSubmissions.length === 0) {
+        recentTable.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-dim); padding: 24px;">No student submissions yet.</td></tr>`;
+      } else {
+        recentTable.innerHTML = allSubmissions.slice(0, 4).map(s => `
+          <tr>
+            <td>
+              <strong>${escapeHtml(s.studentName)}</strong><br>
+              <span style="font-size: 11px; color: var(--text-muted);">${escapeHtml(s.studentEmail)}</span>
+            </td>
+            <td style="font-size: 13px;">${escapeHtml(s.assessmentTitle)}</td>
+            <td style="font-size: 12px; color: var(--text-muted);">${escapeHtml(s.submittedAt)}</td>
+            <td>
+              ${s.repoUrl ? `<a href="${escapeHtml(s.repoUrl)}" target="_blank" style="color: var(--blue-light); font-size: 12px;">🔗 Code Repo</a><br>` : ''}
+              <span style="font-size: 11px; color: var(--text-dim);">📁 ${escapeHtml(s.fileName || 'file.zip')}</span>
+            </td>
+            <td>
+              <span class="badge ${s.status === 'Reviewed' ? 'badge-approved' : 'badge-pending'}">${escapeHtml(s.status)}</span>
+            </td>
+            <td>
+              <button class="btn-sm btn-approve" onclick="openReviewModal('${s.id}')">Review</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    // Populate Courses
+    function renderCourses() {
+      const myCourses = CloudStore.getCoursesForFacilitator(currentUser.id);
+      const grid = document.getElementById('facCoursesGrid');
+      if (myCourses.length === 0) {
+        grid.innerHTML = `<div style="grid-column: 1/-1; padding: 24px; text-align: center; color: var(--text-dim);">No courses assigned to your facilitator profile yet.</div>`;
+        return;
+      }
+
+      grid.innerHTML = myCourses.map(c => `
+        <div class="course-card">
+          <span class="badge badge-orange course-track-chip">${escapeHtml(c.track)}</span>
+          <div class="course-card-body">
+            <div class="course-code">${escapeHtml(c.code)}</div>
+            <h3 class="course-title">${escapeHtml(c.title)}</h3>
+            <p class="course-desc">${escapeHtml(c.description)}</p>
+          </div>
+          <div class="course-meta">
+            <span>👥 ${c.enrolledCount} Learners</span>
+            <span>⏱️ ${escapeHtml(c.duration)}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Materials
+    function renderMaterials() {
+      const materials = CloudStore.getMaterials();
+      const tbody = document.getElementById('facMaterialsTable');
+      if (materials.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-dim); padding: 24px;">No learning materials uploaded.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = materials.map(m => `
+        <tr>
+          <td>
+            <strong>${escapeHtml(m.title)}</strong><br>
+            <span style="font-size: 11px; color: var(--text-muted);">${escapeHtml(m.description)}</span>
+          </td>
+          <td><span class="badge badge-blue">${escapeHtml(m.courseTitle)}</span></td>
+          <td style="font-size: 12px;">${escapeHtml(m.docType)}</td>
+          <td style="font-size: 12px; color: var(--text-muted);">${escapeHtml(m.fileSize)}</td>
+          <td style="font-size: 12px; color: var(--text-dim);">${escapeHtml(m.uploadDate)}</td>
+          <td>
+            <button class="btn-sm btn-danger-outline" onclick="deleteMaterialEntry('${m.id}')">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    window.deleteMaterialEntry = function(id) {
+      if (confirm('Delete this material document?')) {
+        CloudStore.deleteMaterial(id);
+        showToast('Document removed.', 'warning');
+        refreshFacilitatorView();
+      }
+    };
+
+    // Students
+    function renderStudentsTable() {
+      const students = CloudStore.getUsers().filter(u => u.role === 'student');
+      const submissions = CloudStore.getSubmissions();
+      const search = document.getElementById('studentSearchInput').value.toLowerCase().trim();
+
+      const filtered = students.filter(s => s.name.toLowerCase().includes(search) || s.email.toLowerCase().includes(search));
+      const tbody = document.getElementById('facStudentsTable');
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-dim); padding: 24px;">No students found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(st => {
+        const studentSubs = submissions.filter(sub => sub.studentId === st.id);
+        return `
+          <tr>
+            <td><strong>${escapeHtml(st.name)}</strong></td>
+            <td style="color: var(--text-muted); font-size: 13px;">${escapeHtml(st.email)}</td>
+            <td><span class="badge badge-blue">${escapeHtml(st.cloudTrack || 'Cloud Learner')}</span></td>
+            <td><strong>${studentSubs.length}</strong> Workbooks Submitted</td>
+            <td><span class="badge badge-approved">${escapeHtml(st.status || 'Active')}</span></td>
+            <td>
+              <a href="mailto:${escapeHtml(st.email)}" class="btn-sm btn-secondary" style="font-size: 11px;">✉️ Message</a>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Assessments & Workbooks
+    function renderAssessments() {
+      const assessments = CloudStore.getAssessments();
+      const grid = document.getElementById('facAssessmentsGrid');
+      if (assessments.length === 0) {
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-dim); padding: 24px;">No assessments created yet.</div>`;
+        return;
+      }
+
+      grid.innerHTML = assessments.map(a => `
+        <div class="course-card">
+          <span class="badge badge-orange course-track-chip">${escapeHtml(a.type)}</span>
+          <div class="course-card-body">
+            <div class="course-code">${escapeHtml(a.courseTitle)}</div>
+            <h3 class="course-title">${escapeHtml(a.title)}</h3>
+            <p class="course-desc">${escapeHtml(a.instructions)}</p>
+          </div>
+          <div class="course-meta">
+            <span>📅 Due: ${escapeHtml(a.dueDate)}</span>
+            <button class="btn-sm btn-danger-outline" onclick="deleteAssEntry('${a.id}')">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.deleteAssEntry = function(id) {
+      if (confirm('Delete this assessment/workbook?')) {
+        CloudStore.deleteAssessment(id);
+        showToast('Assessment deleted.', 'warning');
+        refreshFacilitatorView();
+      }
+    };
+
+    // Submissions Review (NO grading)
+    function renderSubmissions() {
+      const submissions = CloudStore.getSubmissions();
+      document.getElementById('submissionsCountBadge').textContent = submissions.length;
+
+      const tbody = document.getElementById('facSubmissionsReviewTable');
+      if (submissions.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 24px;">No student submissions have been uploaded yet.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = submissions.map(s => `
+        <tr>
+          <td>
+            <strong>${escapeHtml(s.studentName)}</strong><br>
+            <span style="font-size: 11px; color: var(--text-muted);">${escapeHtml(s.studentEmail)}</span>
+          </td>
+          <td><strong>${escapeHtml(s.assessmentTitle)}</strong></td>
+          <td style="font-size: 12px; color: var(--text-muted);">${escapeHtml(s.submittedAt)}</td>
+          <td>
+            ${s.repoUrl ? `<a href="${escapeHtml(s.repoUrl)}" target="_blank" style="color: var(--blue-light); font-size: 12px;">🔗 Repository</a><br>` : ''}
+            <span style="font-size: 11px; color: var(--text-dim);">📁 ${escapeHtml(s.fileName || 'workbook_upload.zip')}</span>
+          </td>
+          <td>
+            <span class="badge ${s.status === 'Reviewed' ? 'badge-approved' : (s.status === 'Needs Revision' ? 'badge-rejected' : 'badge-pending')}">
+              ${escapeHtml(s.status)}
+            </span>
+          </td>
+          <td style="font-size: 12px; max-width: 220px; color: var(--text-muted);">
+            ${escapeHtml(s.facilitatorRemarks || 'No feedback remarks recorded yet.')}
+          </td>
+          <td>
+            <button class="btn-sm btn-approve" onclick="openReviewModal('${s.id}')">Review & Feedback</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    window.openReviewModal = function(subId) {
+      const sub = CloudStore.getSubmissions().find(s => s.id === subId);
+      if (!sub) return;
+
+      document.getElementById('revSubId').value = sub.id;
+      document.getElementById('revStudentName').textContent = sub.studentName + ' (' + sub.studentEmail + ')';
+      document.getElementById('revAssTitle').textContent = sub.assessmentTitle;
+      document.getElementById('revStudentNotes').innerHTML = `
+        <strong>Student Notes:</strong> ${escapeHtml(sub.notes || 'None provided.')}<br>
+        <strong>Artifact:</strong> ${escapeHtml(sub.fileName || 'N/A')}<br>
+        ${sub.repoUrl ? `<strong>Repo Link:</strong> <a href="${escapeHtml(sub.repoUrl)}" target="_blank" style="color: var(--blue-light);">${escapeHtml(sub.repoUrl)}</a>` : ''}
+      `;
+      document.getElementById('revStatusSelect').value = sub.status || 'Under Review';
+      document.getElementById('revRemarksInput').value = sub.facilitatorRemarks || '';
+
+      openModal('modalReviewSubmission');
+    };
+
+    // Course dropdown selects
+    function populateCourseSelects() {
+      const courses = CloudStore.getCourses();
+      const assSelect = document.getElementById('assCourseSelect');
+      const matSelect = document.getElementById('matCourseSelect');
+
+      const options = courses.map(c => `<option value="${c.id}">${escapeHtml(c.title)}</option>`).join('');
+      assSelect.innerHTML = options;
+      matSelect.innerHTML = options;
+    }
+
+    // Password Authorization Workflow
+    function refreshPasswordAuthorizationSection() {
+      const banner = document.getElementById('passwordPermissionBanner');
+      const formWrap = document.getElementById('unlockedPasswordFormWrap');
+      const req = CloudStore.getUserPasswordRequest(currentUser.id);
+
+      if (!req || req.status === 'COMPLETED') {
+        // No request or already used
+        formWrap.style.display = 'none';
+        banner.innerHTML = `
+          <div class="permission-info">
+            <span class="permission-icon">🔒</span>
+            <div>
+              <div class="permission-title">Password Change Permission Required</div>
+              <div class="permission-desc">You have not requested permission to change your password. Click below to submit an approval request to the Administrator.</div>
+            </div>
+          </div>
+          <div class="status-badge-container">
+            <button class="btn-primary btn-orange" style="width: auto; padding: 9px 18px; font-size: 13px;" onclick="openModal('modalRequestPassword')">
+              Request Permission
+            </button>
+          </div>
+        `;
+      } else if (req.status === 'PENDING') {
+        formWrap.style.display = 'none';
+        banner.innerHTML = `
+          <div class="permission-info">
+            <span class="permission-icon">⏳</span>
+            <div>
+              <div class="permission-title">Request Pending Admin Approval</div>
+              <div class="permission-desc">Your password change request was submitted on <strong>${escapeHtml(req.requestedAt)}</strong> with reason: <em>"${escapeHtml(req.reason)}"</em>. Awaiting Admin verification.</div>
+            </div>
+          </div>
+          <div class="status-badge-container">
+            <span class="badge badge-pending">PENDING APPROVAL</span>
+          </div>
+        `;
+      } else if (req.status === 'APPROVED') {
+        // Unlocked!
+        formWrap.style.display = 'block';
+        banner.innerHTML = `
+          <div class="permission-info">
+            <span class="permission-icon" style="color: var(--success);">🔓</span>
+            <div>
+              <div class="permission-title" style="color: var(--success);">Permission Granted! You May Now Change Your Password</div>
+              <div class="permission-desc">Your request was approved by <strong>${escapeHtml(req.reviewedBy || 'Admin')}</strong> on ${escapeHtml(req.reviewedAt)}. Enter your new password below to finalize.</div>
+            </div>
+          </div>
+          <div class="status-badge-container">
+            <span class="badge badge-approved">APPROVED</span>
+          </div>
+        `;
+      } else if (req.status === 'REJECTED') {
+        formWrap.style.display = 'none';
+        banner.innerHTML = `
+          <div class="permission-info">
+            <span class="permission-icon" style="color: var(--danger);">❌</span>
+            <div>
+              <div class="permission-title" style="color: var(--danger);">Request Was Declined by Administrator</div>
+              <div class="permission-desc">Your previous request was rejected. If you still require a password update, you may submit a new request.</div>
+            </div>
+          </div>
+          <div class="status-badge-container">
+            <button class="btn-primary btn-orange" style="width: auto; padding: 9px 18px; font-size: 13px;" onclick="openModal('modalRequestPassword')">
+              Re-Request Permission
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>

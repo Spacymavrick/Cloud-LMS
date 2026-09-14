@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CloudLearn LMS - Cloud Learner Management System</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body data-theme="dark">
+
+  <div class="auth-page">
+    <!-- Top Right Theme Toggle -->
+    <div class="auth-theme-toggle">
+      <button class="theme-pill-btn" id="themeToggleBtn" type="button">
+        <span class="theme-indicator-icon"></span>
+        <span>Theme</span>
+      </button>
+    </div>
+
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="brand-logo">
+          <span>Cloud<span class="orange">Learn</span> <span class="blue">LMS</span></span>
+        </div>
+        <p class="brand-subtitle" id="authSubtitle">Cloud Learner Management System</p>
+      </div>
+
+      <!-- Auth Mode Switcher -->
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" id="tabSignIn" type="button">Sign In</button>
+        <button class="auth-tab-btn" id="tabRegister" type="button">Register</button>
+      </div>
+
+      <!-- Sign In Form (Wireframe Image 4) -->
+      <form id="signInForm">
+        <div class="form-group">
+          <label class="form-label" for="loginEmail">Email Address</label>
+          <input type="email" id="loginEmail" class="form-input" placeholder="Enter your email" required autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" class="btn-primary" id="btnSignIn">
+          <span>Sign In</span>
+        </button>
+
+        <div class="auth-footer">
+          Don't have an account? <a id="linkGoRegister">Register here</a>
+        </div>
+
+        <!-- Demo Credentials Helper Box -->
+        <div class="demo-box">
+          <h4>⚡ Quick Demo Credentials (Click to Autofill)</h4>
+          <div class="demo-chips">
+            <div class="demo-chip" onclick="quickFill('admin@lms.com', 'admin123')">
+              <span class="demo-role" style="color: var(--badge-admin);">Admin</span>
+              <span class="demo-creds">admin@lms.com / admin123</span>
+            </div>
+            <div class="demo-chip" onclick="quickFill('sarah@lms.com', 'teacher123')">
+              <span class="demo-role" style="color: var(--blue-light);">Teacher (Facilitator)</span>
+              <span class="demo-creds">sarah@lms.com / teacher123</span>
+            </div>
+            <div class="demo-chip" onclick="quickFill('emily@lms.com', 'student123')">
+              <span class="demo-role" style="color: var(--badge-student);">Student</span>
+              <span class="demo-creds">emily@lms.com / student123</span>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!-- Register Form (Wireframe Image 5) -->
+      <form id="registerForm" style="display: none;">
+        <div class="form-group">
+          <label class="form-label" for="regName">Full Name</label>
+          <input type="text" id="regName" class="form-input" placeholder="Enter your full name" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="regEmail">Email Address</label>
+          <input type="email" id="regEmail" class="form-input" placeholder="Enter your email" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="regPassword">Password</label>
+          <input type="password" id="regPassword" class="form-input" placeholder="Create a password" required autocomplete="new-password">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="regConfirmPassword">Confirm Password</label>
+          <input type="password" id="regConfirmPassword" class="form-input" placeholder="Confirm your password" required autocomplete="new-password">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="regRole">Role</label>
+          <select id="regRole" class="form-select" required>
+            <option value="student">Student (Cloud Learner)</option>
+            <option value="teacher">Facilitator (Teacher)</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-primary" id="btnRegister">
+          <span>Create Account</span>
+        </button>
+
+        <div class="auth-footer">
+          Already have an account? <a id="linkGoSignIn">Sign in</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="javascript/store.js"></script>
+  <script src="javascript/app.js"></script>
+  <script>
+    // Quick credential filler
+    function quickFill(email, pwd) {
+      document.getElementById('loginEmail').value = email;
+      document.getElementById('loginPassword').value = pwd;
+      showToast('Credentials filled for ' + email, 'info');
+    }
+
+    // Tab toggle logic
+    const tabSignIn = document.getElementById('tabSignIn');
+    const tabRegister = document.getElementById('tabRegister');
+    const signInForm = document.getElementById('signInForm');
+    const registerForm = document.getElementById('registerForm');
+    const linkGoRegister = document.getElementById('linkGoRegister');
+    const linkGoSignIn = document.getElementById('linkGoSignIn');
+    const authSubtitle = document.getElementById('authSubtitle');
+
+    function setMode(mode) {
+      if (mode === 'register') {
+        tabSignIn.classList.remove('active');
+        tabRegister.classList.add('active');
+        signInForm.style.display = 'none';
+        registerForm.style.display = 'block';
+        authSubtitle.textContent = 'Create your cloud learner account';
+      } else {
+        tabRegister.classList.remove('active');
+        tabSignIn.classList.add('active');
+        registerForm.style.display = 'none';
+        signInForm.style.display = 'block';
+        authSubtitle.textContent = 'Cloud Learner Management System';
+      }
+    }
+
+    tabSignIn.addEventListener('click', () => setMode('signin'));
+    tabRegister.addEventListener('click', () => setMode('register'));
+    linkGoRegister.addEventListener('click', () => setMode('register'));
+    linkGoSignIn.addEventListener('click', () => setMode('signin'));
+
+    // Handle Login
+    signInForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      const user = CloudStore.getUserByEmail(email);
+      if (!user) {
+        showToast('No user account found with that email address.', 'error');
+        return;
+      }
+
+      if (user.password !== password) {
+        showToast('Invalid password. Please verify your credentials.', 'error');
+        return;
+      }
+
+      // Save session
+      CloudStore.setCurrentUser(user);
+      showToast(`Welcome back, ${user.name}! Redirecting...`, 'success');
+
+      setTimeout(() => {
+        if (user.role === 'admin') {
+          window.location.href = 'pages/admin.html';
+        } else if (user.role === 'teacher') {
+          window.location.href = 'pages/facilitator.html';
+        } else {
+          window.location.href = 'pages/student.html';
+        }
+      }, 700);
+    });
+
+    // Handle Registration
+    registerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const confirmPassword = document.getElementById('regConfirmPassword').value;
+      const role = document.getElementById('regRole').value;
+
+      if (password !== confirmPassword) {
+        showToast('Passwords do not match.', 'error');
+        return;
+      }
+
+      if (CloudStore.getUserByEmail(email)) {
+        showToast('An account with this email already exists.', 'error');
+        return;
+      }
+
+      const newUser = CloudStore.addUser({
+        name: name,
+        email: email,
+        password: password,
+        role: role,
+        cloudTrack: role === 'student' ? 'General Cloud Learner' : 'Cloud Architecture Facilitator'
+      });
+
+      CloudStore.setCurrentUser(newUser);
+      showToast(`Account successfully created! Welcome, ${newUser.name}.`, 'success');
+
+      setTimeout(() => {
+        if (newUser.role === 'teacher') {
+          window.location.href = 'pages/facilitator.html';
+        } else {
+          window.location.href = 'pages/student.html';
+        }
+      }, 800);
+    });
+  </script>
+</body>
+</html>

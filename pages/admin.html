@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Portal - CloudLearn LMS</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body data-theme="dark">
+
+  <div class="app-container">
+    <!-- Sidebar (Wireframe Image 1) -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <span>Cloud<span class="orange">Learn</span> <span class="blue">LMS</span></span>
+        </div>
+        <span class="role-pill admin">ADMIN</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a class="nav-link active" data-section="section-dashboard" data-title="Dashboard Overview">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a class="nav-link" data-section="section-users" data-title="Manage Users">
+          <span class="nav-icon">👥</span>
+          <span>Manage Users</span>
+        </a>
+        <a class="nav-link" data-section="section-passwords" data-title="Approve Password Requests">
+          <span class="nav-icon">🔑</span>
+          <span>Approve Password Request</span>
+          <span class="nav-badge" id="sidebarPendingBadge" style="display: none;">0</span>
+        </a>
+        <a class="nav-link" data-section="section-courses" data-title="Manage & Add Courses">
+          <span class="nav-icon">📚</span>
+          <span>Add Course</span>
+        </a>
+        <a class="nav-link" data-section="section-settings" data-title="System Settings">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="signout-btn" type="button">
+          <span class="nav-icon">🚪</span>
+          <span>Sign Out</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      <!-- Top Header Bar -->
+      <header class="top-header">
+        <h1 class="page-title">Dashboard Overview</h1>
+
+        <div class="header-actions">
+          <button class="theme-pill-btn" type="button">
+            <span class="theme-indicator-icon"></span>
+            <span>Theme</span>
+          </button>
+
+          <div class="user-profile-badge">
+            <span class="user-name-text">Admin User</span>
+            <div class="user-avatar-circle">AU</div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Body Container -->
+      <main class="content-body">
+
+        <!-- ========================================================
+             1. DASHBOARD SECTION
+             ======================================================== -->
+        <section id="section-dashboard" class="app-section active">
+          <!-- 4 Stats Cards (from Image 1) -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon-wrap users">👥</div>
+              <div>
+                <div class="stat-value" id="dashTotalUsers">0</div>
+                <div class="stat-label">Total Users</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon-wrap courses">📚</div>
+              <div>
+                <div class="stat-value" id="dashActiveCourses">0</div>
+                <div class="stat-label">Active Courses</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon-wrap students">🎓</div>
+              <div>
+                <div class="stat-value" id="dashTotalStudents">0</div>
+                <div class="stat-label">Students</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon-wrap teachers">👨‍🏫</div>
+              <div>
+                <div class="stat-value" id="dashTotalTeachers">0</div>
+                <div class="stat-label">Teachers (Facilitators)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pending Approvals Alert Panel (Replaces announcements) -->
+          <div class="content-panel" style="margin-top: 28px;">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">
+                  <span class="highlight-dot"></span>
+                  Pending Password Change Approvals
+                </h2>
+                <p class="panel-subtitle">Review and authorize password reset requests submitted by facilitators and students</p>
+              </div>
+              <button class="btn-sm btn-approve" onclick="navigateToSection('section-passwords')">
+                View All Requests &rarr;
+              </button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table" id="dashPendingTable">
+                <thead>
+                  <tr>
+                    <th>Requester</th>
+                    <th>Role</th>
+                    <th>Requested On</th>
+                    <th>Reason / Justification</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="dashPendingList">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- System Cloud Tracks Overview -->
+          <div class="content-panel" style="margin-top: 28px;">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">
+                  <span class="highlight-dot" style="background: var(--blue-light);"></span>
+                  Active Cloud Certification Tracks
+                </h2>
+                <p class="panel-subtitle">Summary of currently running cloud learning curricula</p>
+              </div>
+            </div>
+            <div class="cards-grid" id="dashCoursesPreview">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             2. MANAGE USERS SECTION
+             ======================================================== -->
+        <section id="section-users" class="app-section">
+          <div class="content-panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Platform Users Directory</h2>
+                <p class="panel-subtitle">Manage facilitators, cloud learners, and platform permissions</p>
+              </div>
+
+              <div class="panel-controls">
+                <div class="search-bar">
+                  <span class="search-icon">🔍</span>
+                  <input type="text" id="userSearchInput" placeholder="Search by name or email...">
+                </div>
+
+                <select id="userRoleFilter" class="form-select" style="width: auto; padding: 9px 14px; font-size: 13px;">
+                  <option value="ALL">All Roles</option>
+                  <option value="teacher">Facilitators</option>
+                  <option value="student">Students</option>
+                  <option value="admin">Administrators</option>
+                </select>
+
+                <button class="btn-primary btn-orange" style="width: auto; padding: 9px 16px; font-size: 13px;" onclick="openModal('modalAddUser')">
+                  + Add User
+                </button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email Address</th>
+                    <th>Role</th>
+                    <th>Cloud Track</th>
+                    <th>Status</th>
+                    <th>Joined</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             3. APPROVE PASSWORD REQUEST SECTION
+             ======================================================== -->
+        <section id="section-passwords" class="app-section">
+          <div class="content-panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">
+                  <span class="highlight-dot"></span>
+                  Password Change Request Approvals
+                </h2>
+                <p class="panel-subtitle">
+                  Users cannot change passwords until explicitly approved by an administrator here.
+                </p>
+              </div>
+
+              <div class="panel-controls">
+                <select id="passwordStatusFilter" class="form-select" style="width: auto; padding: 9px 14px; font-size: 13px;">
+                  <option value="ALL">All Requests</option>
+                  <option value="PENDING" selected>Pending Approval Only</option>
+                  <option value="APPROVED">Approved Requests</option>
+                  <option value="REJECTED">Rejected Requests</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Requester</th>
+                    <th>Role</th>
+                    <th>Requested At</th>
+                    <th>Reason / Justification</th>
+                    <th>Status</th>
+                    <th>Reviewed Detail</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="passwordRequestsTableBody">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             4. ADD COURSE SECTION
+             ======================================================== -->
+        <section id="section-courses" class="app-section">
+          <div class="content-panel" style="margin-bottom: 28px;">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Add New Cloud Course</h2>
+                <p class="panel-subtitle">Create a curriculum and assign an authorized cloud facilitator</p>
+              </div>
+            </div>
+
+            <form id="createCourseForm">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px;">
+                <div class="form-group">
+                  <label class="form-label" for="courseTitleInput">Course Title</label>
+                  <input type="text" id="courseTitleInput" class="form-input" placeholder="e.g. AWS Certified DevOps Engineer Professional" required>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="courseCodeInput">Course Code</label>
+                  <input type="text" id="courseCodeInput" class="form-input" placeholder="e.g. AWS-DOP-C02" required>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="courseTrackSelect">Cloud Track / Category</label>
+                  <select id="courseTrackSelect" class="form-select" required>
+                    <option value="AWS">Amazon Web Services (AWS)</option>
+                    <option value="Azure">Microsoft Azure</option>
+                    <option value="GCP">Google Cloud Platform (GCP)</option>
+                    <option value="DevOps">Cloud-Native & DevOps (Kubernetes/Docker)</option>
+                    <option value="Multi-Cloud">Multi-Cloud Architecture</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="courseFacilitatorSelect">Assign Facilitator</label>
+                  <select id="courseFacilitatorSelect" class="form-select" required>
+                    <!-- Populated dynamically -->
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="courseDurationInput">Duration</label>
+                  <input type="text" id="courseDurationInput" class="form-input" placeholder="e.g. 10 Weeks" required>
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-top: 10px;">
+                <label class="form-label" for="courseDescInput">Course Syllabus & Description</label>
+                <textarea id="courseDescInput" class="form-textarea" rows="3" placeholder="Outline the modules, learning goals, and hands-on lab requirements..." required></textarea>
+              </div>
+
+              <button type="submit" class="btn-primary btn-orange" style="width: auto; padding: 12px 28px;">
+                + Create Course
+              </button>
+            </form>
+          </div>
+
+          <!-- Existing Active Courses List -->
+          <div class="content-panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Active Cloud Courses</h2>
+                <p class="panel-subtitle">Currently active curricula in the system</p>
+              </div>
+            </div>
+
+            <div class="cards-grid" id="allCoursesGrid">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             5. SETTINGS SECTION
+             ======================================================== -->
+        <section id="section-settings" class="app-section">
+          <div class="content-panel" style="max-width: 760px;">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Platform & Admin Settings</h2>
+                <p class="panel-subtitle">Configure administrative details and cloud platform defaults</p>
+              </div>
+            </div>
+
+            <form id="adminSettingsForm">
+              <div class="form-group">
+                <label class="form-label" for="adminNameInput">Admin Name</label>
+                <input type="text" id="adminNameInput" class="form-input" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminEmailInput">Email Address</label>
+                <input type="email" id="adminEmailInput" class="form-input" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Platform Name</label>
+                <input type="text" class="form-input" value="CloudLearn LMS (Learner Management System)" readonly style="opacity: 0.8;">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Password Policy</label>
+                <div style="font-size: 13px; color: var(--text-muted); background: var(--bg-input); padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                  🔒 <strong>Strict Approval Enabled:</strong> Facilitators and Students must submit an approval request before updating account passwords. Administrators verify and approve all requests directly.
+                </div>
+              </div>
+
+              <button type="submit" class="btn-primary" style="width: auto; padding: 12px 28px;">
+                Save Changes
+              </button>
+            </form>
+          </div>
+        </section>
+
+      </main>
+
+      <footer class="app-footer">
+        &copy; 2026 CloudLearn LMS. All rights reserved. Designed for Cloud Computing Learners & Facilitators.
+      </footer>
+    </div>
+  </div>
+
+  <!-- Modal: Add User -->
+  <div class="modal-overlay" id="modalAddUser">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeModal('modalAddUser')">&times;</button>
+      <h3 class="modal-title">Add New User</h3>
+      <p class="modal-subtitle">Enroll a new cloud student or authorized facilitator</p>
+
+      <form id="addUserForm">
+        <div class="form-group">
+          <label class="form-label" for="newUserName">Full Name</label>
+          <input type="text" id="newUserName" class="form-input" placeholder="e.g. John Doe" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="newUserEmail">Email Address</label>
+          <input type="email" id="newUserEmail" class="form-input" placeholder="e.g. john@lms.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="newUserRole">Role</label>
+          <select id="newUserRole" class="form-select" required>
+            <option value="student">Student (Cloud Learner)</option>
+            <option value="teacher">Facilitator (Teacher)</option>
+            <option value="admin">Administrator</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="newUserTrack">Cloud Track / Specialization</label>
+          <input type="text" id="newUserTrack" class="form-input" placeholder="e.g. AWS Solutions Architect" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="newUserPassword">Initial Password</label>
+          <input type="text" id="newUserPassword" class="form-input" value="cloud2026!" required>
+        </div>
+
+        <button type="submit" class="btn-primary btn-orange" style="margin-top: 10px;">
+          Create User
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../javascript/store.js"></script>
+  <script src="../javascript/app.js"></script>
+  <script>
+    const currentUser = checkSession('admin');
+
+    // Section switcher helper
+    function navigateToSection(secId) {
+      const link = document.querySelector(`.sidebar-nav .nav-link[data-section="${secId}"]`);
+      if (link) link.click();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initSectionNavigation('section-dashboard');
+      refreshAll();
+
+      // Search & Filters for Users
+      document.getElementById('userSearchInput').addEventListener('input', renderUsersTable);
+      document.getElementById('userRoleFilter').addEventListener('change', renderUsersTable);
+      document.getElementById('passwordStatusFilter').addEventListener('change', renderPasswordRequestsTable);
+
+      // Add user form
+      document.getElementById('addUserForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('newUserName').value.trim();
+        const email = document.getElementById('newUserEmail').value.trim();
+        const role = document.getElementById('newUserRole').value;
+        const track = document.getElementById('newUserTrack').value.trim();
+        const pwd = document.getElementById('newUserPassword').value;
+
+        if (CloudStore.getUserByEmail(email)) {
+          showToast('User with this email already exists.', 'error');
+          return;
+        }
+
+        CloudStore.addUser({
+          name: name,
+          email: email,
+          password: pwd,
+          role: role,
+          cloudTrack: track
+        });
+
+        showToast(`User ${name} added successfully!`, 'success');
+        closeModal('modalAddUser');
+        document.getElementById('addUserForm').reset();
+        refreshAll();
+      });
+
+      // Add course form
+      document.getElementById('createCourseForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = document.getElementById('courseTitleInput').value.trim();
+        const code = document.getElementById('courseCodeInput').value.trim();
+        const track = document.getElementById('courseTrackSelect').value;
+        const facSelect = document.getElementById('courseFacilitatorSelect');
+        const facId = facSelect.value;
+        const facName = facSelect.options[facSelect.selectedIndex].text;
+        const duration = document.getElementById('courseDurationInput').value.trim();
+        const desc = document.getElementById('courseDescInput').value.trim();
+
+        CloudStore.addCourse({
+          title: title,
+          code: code,
+          track: track,
+          facilitatorId: facId,
+          facilitatorName: facName,
+          duration: duration,
+          description: desc
+        });
+
+        showToast(`Course "${title}" created successfully!`, 'success');
+        document.getElementById('createCourseForm').reset();
+        refreshAll();
+      });
+
+      // Admin Settings Form
+      if (currentUser) {
+        document.getElementById('adminNameInput').value = currentUser.name;
+        document.getElementById('adminEmailInput').value = currentUser.email;
+      }
+
+      document.getElementById('adminSettingsForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('adminNameInput').value.trim();
+        const email = document.getElementById('adminEmailInput').value.trim();
+
+        CloudStore.updateUser(currentUser.id, { name, email });
+        showToast('Admin profile successfully updated.', 'success');
+        refreshAll();
+      });
+    });
+
+    function refreshAll() {
+      updateDashboardStats();
+      renderUsersTable();
+      renderPasswordRequestsTable();
+      populateFacilitatorDropdown();
+      renderCourses();
+    }
+
+    // Update Dashboard Metrics
+    function updateDashboardStats() {
+      const users = CloudStore.getUsers();
+      const courses = CloudStore.getCourses();
+      const students = users.filter(u => u.role === 'student');
+      const teachers = users.filter(u => u.role === 'teacher');
+      const requests = CloudStore.getPasswordRequests();
+      const pendingReqs = requests.filter(r => r.status === 'PENDING');
+
+      document.getElementById('dashTotalUsers').textContent = users.length;
+      document.getElementById('dashActiveCourses').textContent = courses.length;
+      document.getElementById('dashTotalStudents').textContent = students.length;
+      document.getElementById('dashTotalTeachers').textContent = teachers.length;
+
+      // Sidebar badge
+      const badge = document.getElementById('sidebarPendingBadge');
+      if (pendingReqs.length > 0) {
+        badge.textContent = pendingReqs.length;
+        badge.style.display = 'inline-block';
+      } else {
+        badge.style.display = 'none';
+      }
+
+      // Render dashboard pending table
+      const dashPendingList = document.getElementById('dashPendingList');
+      if (pendingReqs.length === 0) {
+        dashPendingList.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align: center; color: var(--text-dim); padding: 24px;">
+              No pending password requests. All accounts up to date.
+            </td>
+          </tr>
+        `;
+      } else {
+        dashPendingList.innerHTML = pendingReqs.map(r => `
+          <tr>
+            <td>
+              <strong>${escapeHtml(r.userName)}</strong><br>
+              <span style="font-size: 11px; color: var(--text-muted);">${escapeHtml(r.userEmail)}</span>
+            </td>
+            <td><span class="role-pill ${r.role}">${r.role.toUpperCase()}</span></td>
+            <td>${escapeHtml(r.requestedAt)}</td>
+            <td style="color: var(--text-muted); font-size: 12px; max-width: 260px;">${escapeHtml(r.reason)}</td>
+            <td>
+              <button class="btn-sm btn-approve" onclick="approveRequest('${r.id}')">Approve</button>
+              <button class="btn-sm btn-reject" onclick="rejectRequest('${r.id}')" style="margin-left: 6px;">Reject</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      // Render dashboard courses preview
+      const previewEl = document.getElementById('dashCoursesPreview');
+      previewEl.innerHTML = courses.slice(0, 3).map(c => `
+        <div class="course-card">
+          <span class="badge badge-orange course-track-chip">${escapeHtml(c.track)}</span>
+          <div class="course-card-body">
+            <div class="course-code">${escapeHtml(c.code)}</div>
+            <h3 class="course-title">${escapeHtml(c.title)}</h3>
+            <p class="course-desc">${escapeHtml(c.description)}</p>
+          </div>
+          <div class="course-meta">
+            <span>👨‍🏫 ${escapeHtml(c.facilitatorName)}</span>
+            <span>⏱️ ${escapeHtml(c.duration)}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Render Users Table
+    function renderUsersTable() {
+      const users = CloudStore.getUsers();
+      const search = document.getElementById('userSearchInput').value.toLowerCase().trim();
+      const roleFilter = document.getElementById('userRoleFilter').value;
+
+      const filtered = users.filter(u => {
+        const matchesSearch = u.name.toLowerCase().includes(search) || u.email.toLowerCase().includes(search);
+        const matchesRole = roleFilter === 'ALL' || u.role === roleFilter;
+        return matchesSearch && matchesRole;
+      });
+
+      const tbody = document.getElementById('usersTableBody');
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 30px;">No users match your criteria.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(u => `
+        <tr>
+          <td>
+            <strong>${escapeHtml(u.name)}</strong>
+          </td>
+          <td style="color: var(--text-muted);">${escapeHtml(u.email)}</td>
+          <td><span class="role-pill ${u.role}">${u.role.toUpperCase()}</span></td>
+          <td><span class="badge badge-blue">${escapeHtml(u.cloudTrack || 'General')}</span></td>
+          <td>
+            <span class="badge badge-approved">${escapeHtml(u.status || 'Active')}</span>
+          </td>
+          <td style="color: var(--text-dim); font-size: 12px;">${escapeHtml(u.joinedDate || '2024-01-01')}</td>
+          <td>
+            ${u.id !== currentUser.id ? `
+              <button class="btn-sm btn-danger-outline" onclick="deleteUserAccount('${u.id}')">Delete</button>
+            ` : '<span style="font-size: 11px; color: var(--text-dim);">Current Admin</span>'}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Delete User
+    window.deleteUserAccount = function(userId) {
+      if (confirm('Are you sure you want to remove this user from the system?')) {
+        CloudStore.deleteUser(userId);
+        showToast('User removed from system.', 'warning');
+        refreshAll();
+      }
+    };
+
+    // Render Password Requests Table
+    function renderPasswordRequestsTable() {
+      const requests = CloudStore.getPasswordRequests();
+      const statusFilter = document.getElementById('passwordStatusFilter').value;
+
+      const filtered = requests.filter(r => {
+        if (statusFilter === 'ALL') return true;
+        return r.status === statusFilter;
+      });
+
+      const tbody = document.getElementById('passwordRequestsTableBody');
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 30px;">No password requests found for this filter.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(r => {
+        let statusBadge = `<span class="badge badge-pending">PENDING</span>`;
+        if (r.status === 'APPROVED') statusBadge = `<span class="badge badge-approved">APPROVED</span>`;
+        if (r.status === 'REJECTED') statusBadge = `<span class="badge badge-rejected">REJECTED</span>`;
+        if (r.status === 'COMPLETED') statusBadge = `<span class="badge badge-blue">COMPLETED</span>`;
+
+        return `
+          <tr>
+            <td>
+              <strong>${escapeHtml(r.userName)}</strong><br>
+              <span style="font-size: 11px; color: var(--text-muted);">${escapeHtml(r.userEmail)}</span>
+            </td>
+            <td><span class="role-pill ${r.role}">${r.role.toUpperCase()}</span></td>
+            <td style="font-size: 12px; color: var(--text-muted);">${escapeHtml(r.requestedAt)}</td>
+            <td style="font-size: 13px; max-width: 240px;">${escapeHtml(r.reason)}</td>
+            <td>${statusBadge}</td>
+            <td style="font-size: 11px; color: var(--text-dim);">
+              ${r.reviewedAt ? `Reviewed on ${escapeHtml(r.reviewedAt)}` : 'Awaiting review'}
+            </td>
+            <td>
+              ${r.status === 'PENDING' ? `
+                <button class="btn-sm btn-approve" onclick="approveRequest('${r.id}')">Approve</button>
+                <button class="btn-sm btn-reject" onclick="rejectRequest('${r.id}')" style="margin-left: 6px;">Reject</button>
+              ` : `
+                <span style="font-size: 12px; color: var(--text-dim);">Locked (${r.status})</span>
+              `}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Approve / Reject Handlers
+    window.approveRequest = function(reqId) {
+      const res = CloudStore.approvePasswordRequest(reqId, currentUser.name);
+      if (res) {
+        showToast(`Approved password change permission for ${res.userName}!`, 'success');
+        refreshAll();
+      }
+    };
+
+    window.rejectRequest = function(reqId) {
+      const res = CloudStore.rejectPasswordRequest(reqId, currentUser.name);
+      if (res) {
+        showToast(`Rejected password change request for ${res.userName}.`, 'warning');
+        refreshAll();
+      }
+    };
+
+    // Populate facilitator dropdown
+    function populateFacilitatorDropdown() {
+      const select = document.getElementById('courseFacilitatorSelect');
+      const teachers = CloudStore.getUsers().filter(u => u.role === 'teacher');
+      select.innerHTML = teachers.map(t => `<option value="${t.id}">${escapeHtml(t.name)}</option>`).join('');
+    }
+
+    // Render Courses Grid
+    function renderCourses() {
+      const courses = CloudStore.getCourses();
+      const grid = document.getElementById('allCoursesGrid');
+      grid.innerHTML = courses.map(c => `
+        <div class="course-card">
+          <span class="badge badge-orange course-track-chip">${escapeHtml(c.track)}</span>
+          <div class="course-card-body">
+            <div class="course-code">${escapeHtml(c.code)}</div>
+            <h3 class="course-title">${escapeHtml(c.title)}</h3>
+            <p class="course-desc">${escapeHtml(c.description)}</p>
+          </div>
+          <div class="course-meta">
+            <span>👨‍🏫 ${escapeHtml(c.facilitatorName)}</span>
+            <button class="btn-sm btn-danger-outline" onclick="deleteCourseEntry('${c.id}')">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.deleteCourseEntry = function(courseId) {
+      if (confirm('Are you sure you want to remove this course?')) {
+        CloudStore.deleteCourse(courseId);
+        showToast('Course removed.', 'warning');
+        refreshAll();
+      }
+    };
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>
