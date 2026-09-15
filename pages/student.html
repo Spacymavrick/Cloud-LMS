@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,10 @@
   <link rel="stylesheet" href="../css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
 </head>
+
 <body data-theme="dark">
 
   <div class="app-container">
@@ -170,7 +173,8 @@
               </div>
 
               <div class="panel-controls">
-                <select id="materialCourseFilter" class="form-select" style="width: auto; padding: 9px 14px; font-size: 13px;">
+                <select id="materialCourseFilter" class="form-select"
+                  style="width: auto; padding: 9px 14px; font-size: 13px;">
                   <option value="ALL">All Cloud Courses</option>
                   <!-- Populated via JS -->
                 </select>
@@ -192,7 +196,8 @@
             <div class="panel-header">
               <div>
                 <h2 class="panel-title">Open Workbooks & Practical Labs</h2>
-                <p class="panel-subtitle">Select an assessment to upload your architecture diagram, notes, or repository</p>
+                <p class="panel-subtitle">Select an assessment to upload your architecture diagram, notes, or repository
+                </p>
               </div>
             </div>
 
@@ -255,7 +260,8 @@
 
               <div class="form-group">
                 <label class="form-label" for="studTrackInput">Primary Cloud Track</label>
-                <input type="text" id="studTrackInput" class="form-input" value="Cloud Admin" readonly style="opacity: 0.85; background: var(--bg-card);">
+                <input type="text" id="studTrackInput" class="form-input" value="Cloud Admin" readonly
+                  style="opacity: 0.85; background: var(--bg-card);">
               </div>
 
               <button type="submit" class="btn-primary" style="width: auto; padding: 11px 24px;">
@@ -284,12 +290,14 @@
                 <form id="changeStudentPasswordForm">
                   <div class="form-group">
                     <label class="form-label" for="newStudPassword">New Password</label>
-                    <input type="password" id="newStudPassword" class="form-input" placeholder="Enter new strong password" required autocomplete="new-password">
+                    <input type="password" id="newStudPassword" class="form-input"
+                      placeholder="Enter new strong password" required autocomplete="new-password">
                   </div>
 
                   <div class="form-group">
                     <label class="form-label" for="confirmStudPassword">Confirm New Password</label>
-                    <input type="password" id="confirmStudPassword" class="form-input" placeholder="Confirm new password" required autocomplete="new-password">
+                    <input type="password" id="confirmStudPassword" class="form-input"
+                      placeholder="Confirm new password" required autocomplete="new-password">
                   </div>
 
                   <button type="submit" class="btn-primary btn-orange" style="width: auto; padding: 12px 28px;">
@@ -318,28 +326,37 @@
 
       <form id="submitTaskForm">
         <input type="hidden" id="submitAssessmentId">
-        
+
         <div class="form-group">
           <label class="form-label">Task Deliverable</label>
-          <div id="submitModalTaskTitle" style="font-weight: 700; color: var(--blue-light); font-size: 14px; margin-bottom: 6px;"></div>
-          <div id="submitModalInstructions" style="font-size: 12px; color: var(--text-muted); line-height: 1.4; background: var(--bg-input); padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);"></div>
+          <div id="submitModalTaskTitle"
+            style="font-weight: 700; color: var(--blue-light); font-size: 14px; margin-bottom: 6px;"></div>
+          <div id="submitModalInstructions"
+            style="font-size: 12px; color: var(--text-muted); line-height: 1.4; background: var(--bg-input); padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+          </div>
         </div>
 
         <div class="form-group">
           <label class="form-label" for="submitRepoUrl">Git Repository / Architecture Link</label>
-          <input type="url" id="submitRepoUrl" class="form-input" placeholder="https://github.com/your-username/cloud-lab-repo">
+          <input type="url" id="submitRepoUrl" class="form-input"
+            placeholder="https://github.com/your-username/cloud-lab-repo">
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="submitFileInput">Upload Work Document (.pdf, .doc, .docx, .zip, .png, etc.)</label>
-          <input type="file" id="submitFileInput" class="form-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.zip,.png,.jpg,.jpeg">
-          <div id="submitSelectedFileInfo" style="font-size: 12px; color: var(--blue-light); margin-top: 6px; display: none;"></div>
+          <label class="form-label" for="submitFileInput">Upload Work Document (.pdf, .doc, .docx, .zip, .png,
+            etc.)</label>
+          <input type="file" id="submitFileInput" class="form-input"
+            accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.zip,.png,.jpg,.jpeg">
+          <div id="submitSelectedFileInfo"
+            style="font-size: 12px; color: var(--blue-light); margin-top: 6px; display: none;"></div>
           <input type="hidden" id="submitFileName">
         </div>
 
         <div class="form-group">
           <label class="form-label" for="submitNotes">Submission Notes & Implementation Summary</label>
-          <textarea id="submitNotes" class="form-textarea" rows="4" placeholder="Briefly describe your design decisions, subnet ranges, or container deployment commands..." required></textarea>
+          <textarea id="submitNotes" class="form-textarea" rows="4"
+            placeholder="Briefly describe your design decisions, subnet ranges, or container deployment commands..."
+            required></textarea>
         </div>
 
         <button type="submit" class="btn-primary btn-orange">
@@ -357,12 +374,15 @@
       <h3 class="modal-title" id="viewDocTitle">Document Title</h3>
       <p class="modal-subtitle" id="viewDocCourse">Course Title</p>
 
-      <div style="background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; font-size: 13.5px; line-height: 1.6; color: var(--text-main); margin-bottom: 20px; max-height: 280px; overflow-y: auto;" id="viewDocContent">
+      <div
+        style="background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; font-size: 13.5px; line-height: 1.6; color: var(--text-main); margin-bottom: 20px; max-height: 280px; overflow-y: auto;"
+        id="viewDocContent">
         <!-- Content preview injected via JS -->
       </div>
 
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-size: 12px; color: var(--text-dim);" id="viewDocMeta">Size: 4.2 MB | Uploaded: 2024-03-10</span>
+        <span style="font-size: 12px; color: var(--text-dim);" id="viewDocMeta">Size: 4.2 MB | Uploaded:
+          2024-03-10</span>
         <button class="btn-primary" style="width: auto; padding: 10px 20px;" onclick="simulateDownload()">
           ⬇️ Download Document
         </button>
@@ -380,7 +400,8 @@
       <form id="studentRequestPasswordForm">
         <div class="form-group">
           <label class="form-label" for="studReqReasonInput">Reason for Password Change</label>
-          <textarea id="studReqReasonInput" class="form-textarea" rows="3" placeholder="e.g. Updating security credentials for multi-cloud lab access..." required></textarea>
+          <textarea id="studReqReasonInput" class="form-textarea" rows="3"
+            placeholder="e.g. Updating security credentials for multi-cloud lab access..." required></textarea>
         </div>
 
         <button type="submit" class="btn-primary btn-orange">
@@ -549,7 +570,6 @@
         <div class="course-card">
           <span class="badge badge-orange course-track-chip">${escapeHtml(c.track)}</span>
           <div class="course-card-body">
-            <div class="course-code">${escapeHtml(c.code)}</div>
             <h3 class="course-title">${escapeHtml(c.title)}</h3>
             <p class="course-desc">${escapeHtml(c.description)}</p>
           </div>
@@ -630,7 +650,7 @@
 
     // Document Viewer
     let currentViewingDoc = null;
-    window.openDocumentViewer = function(docId) {
+    window.openDocumentViewer = function (docId) {
       const doc = CloudStore.getMaterials().find(m => m.id === docId);
       if (!doc) return;
       currentViewingDoc = doc;
@@ -658,7 +678,7 @@
       openModal('modalViewDocument');
     };
 
-    window.simulateDownload = function() {
+    window.simulateDownload = function () {
       if (currentViewingDoc) {
         CloudStore.downloadFile(currentViewingDoc.fileName || (currentViewingDoc.title + '.pdf'), currentViewingDoc.fileData);
         showToast(`Downloading "${currentViewingDoc.title}"...`, 'success');
@@ -668,7 +688,7 @@
       closeModal('modalViewDocument');
     };
 
-    window.downloadSubmissionFile = function(subId) {
+    window.downloadSubmissionFile = function (subId) {
       const s = CloudStore.getSubmissions().find(item => item.id === subId);
       if (s) {
         CloudStore.downloadFile(s.fileName || 'my_workbook_submission.zip', s.fileData);
@@ -692,7 +712,6 @@
 
         return `
           <div class="course-card">
-            <span class="badge badge-orange course-track-chip">${escapeHtml(a.type)}</span>
             <div class="course-card-body">
               <div class="course-code">${escapeHtml(a.courseTitle)}</div>
               <h3 class="course-title">${escapeHtml(a.title)}</h3>
@@ -711,7 +730,7 @@
       }).join('');
     }
 
-    window.openSubmitModal = function(assessmentId) {
+    window.openSubmitModal = function (assessmentId) {
       const a = CloudStore.getAssessments().find(item => item.id === assessmentId);
       if (!a) return;
 
@@ -833,4 +852,5 @@
     }
   </script>
 </body>
+
 </html>

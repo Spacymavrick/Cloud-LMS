@@ -105,43 +105,35 @@
   const DEFAULT_COURSES = [
     {
       id: 'c1',
-      code: 'AWS-SAA-C03',
       title: 'AWS Certified Solutions Architect Associate',
       track: 'Cloud Admin',
       facilitatorId: 'u_sarah',
       facilitatorName: 'Dr. Sarah Johnson',
-      enrolledCount: 5,
-      duration: '10 Weeks'
+      enrolledCount: 5
     },
     {
       id: 'c2',
-      code: 'GCP-ACE-201',
       title: 'Google Cloud Platform (GCP) Cloud Engineer',
       track: 'Cloud Admin',
       facilitatorId: 'u_david',
       facilitatorName: 'David Chen',
-      enrolledCount: 4,
-      duration: '8 Weeks'
+      enrolledCount: 4
     },
     {
       id: 'c3',
-      code: 'AZ-104',
       title: 'Microsoft Azure Administrator & Fundamentals',
       track: 'Cloud Admin',
       facilitatorId: 'u_sarah',
       facilitatorName: 'Dr. Sarah Johnson',
-      enrolledCount: 4,
-      duration: '8 Weeks'
+      enrolledCount: 4
     },
     {
       id: 'c4',
-      code: 'K8S-CKA',
       title: 'Cloud DevOps with Docker & Kubernetes',
       track: 'Cloud Admin',
       facilitatorId: 'u_david',
       facilitatorName: 'David Chen',
-      enrolledCount: 5,
-      duration: '12 Weeks'
+      enrolledCount: 5
     }
   ];
 
@@ -240,41 +232,8 @@
     }
   ];
 
-  // Pre-seeded Submissions
-  const DEFAULT_SUBMISSIONS = [
-    {
-      id: 'sub_1',
-      assessmentId: 'a1',
-      assessmentTitle: 'Lab Workbook 1: Design Multi-AZ High-Availability VPC',
-      studentId: 'u_emily',
-      studentName: 'Emily Williams',
-      studentEmail: 'emily@lms.com',
-      submittedAt: '2026-09-05 14:32',
-      repoUrl: 'https://github.com/emily-cloud/aws-vpc-terraform',
-      notes: 'Configured 2 public subnets and 2 private subnets across us-east-1a and us-east-1b with elastic IP NAT Gateways.',
-      fileName: 'aws_vpc_multi_az_submission.zip',
-      fileSize: '1.2 MB',
-      fileData: null,
-      status: 'Reviewed',
-      facilitatorRemarks: 'Excellent architecture diagram and clean Terraform modularization. Approved with commendations.'
-    },
-    {
-      id: 'sub_2',
-      assessmentId: 'a2',
-      assessmentTitle: 'Practical Assessment: Containerized App Deployment to EKS/GKE',
-      studentId: 'u_marcus',
-      studentName: 'Marcus Vance',
-      studentEmail: 'marcus@lms.com',
-      submittedAt: '2026-09-06 09:15',
-      repoUrl: 'https://github.com/marcus-v/k8s-ingress-app',
-      notes: 'Included cluster ingress yaml, secret configurations, and load balancer annotations.',
-      fileName: 'k8s_deployment_manifests.yaml',
-      fileSize: '45 KB',
-      fileData: null,
-      status: 'Under Review',
-      facilitatorRemarks: 'Manifests received. Checking service loadbalancer ingress setup.'
-    }
-  ];
+  // Pre-seeded Submissions (empty by default)
+  const DEFAULT_SUBMISSIONS = [];
 
   // Pre-seeded Password Requests
   const DEFAULT_PASSWORD_REQUESTS = [
@@ -312,10 +271,10 @@
     if (syncChannel) {
       try {
         syncChannel.postMessage({ type, data, timestamp: Date.now() });
-      } catch (e) {}
+      } catch (e) { }
     }
     syncListeners.forEach(fn => {
-      try { fn(type, data); } catch (e) {}
+      try { fn(type, data); } catch (e) { }
     });
   }
 
@@ -323,7 +282,7 @@
     syncChannel.onmessage = (event) => {
       const { type, data } = event.data || {};
       syncListeners.forEach(fn => {
-        try { fn(type, data); } catch (e) {}
+        try { fn(type, data); } catch (e) { }
       });
     };
   }
@@ -331,7 +290,7 @@
   window.addEventListener('storage', (e) => {
     if (e.key && e.key.startsWith('cloudlms_')) {
       syncListeners.forEach(fn => {
-        try { fn('STORAGE_CHANGED', { key: e.key }); } catch (err) {}
+        try { fn('STORAGE_CHANGED', { key: e.key }); } catch (err) { }
       });
     }
   });
@@ -372,43 +331,32 @@
     if (!localStorage.getItem(STORAGE_KEYS.ASSESSMENTS)) {
       localStorage.setItem(STORAGE_KEYS.ASSESSMENTS, JSON.stringify(DEFAULT_ASSESSMENTS));
     }
-    if (!localStorage.getItem(STORAGE_KEYS.SUBMISSIONS)) {
-      localStorage.setItem(STORAGE_KEYS.SUBMISSIONS, JSON.stringify(DEFAULT_SUBMISSIONS));
-    }
-    if (!localStorage.getItem(STORAGE_KEYS.PASSWORD_REQUESTS)) {
-      localStorage.setItem(STORAGE_KEYS.PASSWORD_REQUESTS, JSON.stringify(DEFAULT_PASSWORD_REQUESTS));
-    }
-    if (!localStorage.getItem(STORAGE_KEYS.THEME)) {
-      localStorage.setItem(STORAGE_KEYS.THEME, 'dark');
+    // Ensure submissions start empty by default, clearing any old mock submissions (sub_1, sub_2)
+    const storedSubs = localStorage.getItem(STORAGE_KEYS.SUBMISSIONS);
+    if (!storedSubs || storedSubs.includes('sub_1') || storedSubs.includes('sub_2')) {
+      localStorage.setItem(STORAGE_KEYS.SUBMISSIONS, JSON.stringify([]));
     }
 
-    // Unify all tracks to 'Cloud Admin' for existing users and courses
+    // Strip course code and duration from existing stored courses so they match the new format
     try {
-      const courses = get(STORAGE_KEYS.COURSES);
+      const courses = JSON.parse(localStorage.getItem(STORAGE_KEYS.COURSES) || '[]');
       let courseUpdated = false;
       courses.forEach(c => {
-        if (c.track !== 'Cloud Admin') {
-          c.track = 'Cloud Admin';
+        if (c.code !== undefined || c.duration !== undefined) {
+          delete c.code;
+          delete c.duration;
           courseUpdated = true;
         }
       });
       if (courseUpdated) {
         localStorage.setItem(STORAGE_KEYS.COURSES, JSON.stringify(courses));
       }
-
-      const users = get(STORAGE_KEYS.USERS);
-      let userUpdated = false;
-      users.forEach(u => {
-        if (u.cloudTrack !== 'Cloud Admin') {
-          u.cloudTrack = 'Cloud Admin';
-          userUpdated = true;
-        }
-      });
-      if (userUpdated) {
-        localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
-      }
-    } catch (e) {
-      console.warn('Migration warning:', e);
+    } catch (e) { }
+    if (!localStorage.getItem(STORAGE_KEYS.PASSWORD_REQUESTS)) {
+      localStorage.setItem(STORAGE_KEYS.PASSWORD_REQUESTS, JSON.stringify(DEFAULT_PASSWORD_REQUESTS));
+    }
+    if (!localStorage.getItem(STORAGE_KEYS.THEME)) {
+      localStorage.setItem(STORAGE_KEYS.THEME, 'dark');
     }
   }
 
@@ -431,7 +379,7 @@
       try {
         sessionStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
         localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
-      } catch (e) {}
+      } catch (e) { }
     },
     logout: function () {
       sessionStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
@@ -484,7 +432,7 @@
       user.id = 'u_' + Date.now();
       user.joinedDate = new Date().toISOString().split('T')[0];
       user.status = 'Active';
-      user.cloudTrack = 'Cloud Admin';
+      user.cloudTrack = user.cloudTrack || 'Cloud Admin';
       users.push(user);
       set(STORAGE_KEYS.USERS, users, true, 'USERS_CHANGED');
       return user;
@@ -520,7 +468,7 @@
       const courses = this.getCourses();
       course.id = 'c_' + Date.now();
       course.enrolledCount = 0;
-      course.track = 'Cloud Admin';
+      course.track = course.track || 'Cloud Admin';
       courses.push(course);
       set(STORAGE_KEYS.COURSES, courses, true, 'COURSES_CHANGED');
       return course;

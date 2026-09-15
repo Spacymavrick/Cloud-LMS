@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,10 @@
   <link rel="stylesheet" href="../css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
 </head>
+
 <body data-theme="dark">
 
   <div class="app-container">
@@ -122,7 +125,8 @@
                   <span class="highlight-dot"></span>
                   Pending Password Change Approvals
                 </h2>
-                <p class="panel-subtitle">Review and authorize password reset requests submitted by facilitators and students</p>
+                <p class="panel-subtitle">Review and authorize password reset requests submitted by facilitators and
+                  students</p>
               </div>
               <button class="btn-sm btn-approve" onclick="navigateToSection('section-passwords')">
                 View All Requests &rarr;
@@ -146,22 +150,6 @@
               </table>
             </div>
           </div>
-
-          <!-- System Cloud Tracks Overview -->
-          <div class="content-panel" style="margin-top: 28px;">
-            <div class="panel-header">
-              <div>
-                <h2 class="panel-title">
-                  <span class="highlight-dot" style="background: var(--blue-light);"></span>
-                  Active Cloud Certification Tracks
-                </h2>
-                <p class="panel-subtitle">Summary of currently running cloud learning curricula</p>
-              </div>
-            </div>
-            <div class="cards-grid" id="dashCoursesPreview">
-              <!-- Injected via JS -->
-            </div>
-          </div>
         </section>
 
         <!-- ========================================================
@@ -181,14 +169,16 @@
                   <input type="text" id="userSearchInput" placeholder="Search by name or email...">
                 </div>
 
-                <select id="userRoleFilter" class="form-select" style="width: auto; padding: 9px 14px; font-size: 13px;">
+                <select id="userRoleFilter" class="form-select"
+                  style="width: auto; padding: 9px 14px; font-size: 13px;">
                   <option value="ALL">All Roles</option>
                   <option value="teacher">Facilitators</option>
                   <option value="student">Students</option>
                   <option value="admin">Administrators</option>
                 </select>
 
-                <button class="btn-primary btn-orange" style="width: auto; padding: 9px 16px; font-size: 13px;" onclick="openModal('modalAddUser')">
+                <button class="btn-primary btn-orange" style="width: auto; padding: 9px 16px; font-size: 13px;"
+                  onclick="openModal('modalAddUser')">
                   + Add User
                 </button>
               </div>
@@ -232,7 +222,8 @@
               </div>
 
               <div class="panel-controls">
-                <select id="passwordStatusFilter" class="form-select" style="width: auto; padding: 9px 14px; font-size: 13px;">
+                <select id="passwordStatusFilter" class="form-select"
+                  style="width: auto; padding: 9px 14px; font-size: 13px;">
                   <option value="ALL">All Requests</option>
                   <option value="PENDING" selected>Pending Approval Only</option>
                   <option value="APPROVED">Approved Requests</option>
@@ -278,18 +269,15 @@
               <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px;">
                 <div class="form-group">
                   <label class="form-label" for="courseTitleInput">Course Title</label>
-                  <input type="text" id="courseTitleInput" class="form-input" placeholder="e.g. AWS Certified DevOps Engineer Professional" required>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label" for="courseCodeInput">Course Code</label>
-                  <input type="text" id="courseCodeInput" class="form-input" placeholder="e.g. AWS-DOP-C02" required>
+                  <input type="text" id="courseTitleInput" class="form-input"
+                    placeholder="e.g. AWS Certified DevOps Engineer Professional" required>
                 </div>
 
                 <div class="form-group">
                   <label class="form-label" for="courseTrackSelect">Cloud Track / Category</label>
                   <select id="courseTrackSelect" class="form-select" required>
                     <option value="Cloud Admin" selected>Cloud Admin</option>
+                    <option value="Technical Support">Technical Support</option>
                   </select>
                 </div>
 
@@ -299,14 +287,10 @@
                     <!-- Populated dynamically -->
                   </select>
                 </div>
-
-                <div class="form-group">
-                  <label class="form-label" for="courseDurationInput">Duration</label>
-                  <input type="text" id="courseDurationInput" class="form-input" placeholder="e.g. 10 Weeks" required>
-                </div>
               </div>
 
-              <button type="submit" class="btn-primary btn-orange" style="width: auto; padding: 12px 28px; margin-top: 14px;">
+              <button type="submit" class="btn-primary btn-orange"
+                style="width: auto; padding: 12px 28px; margin-top: 14px;">
                 + Create Course
               </button>
             </form>
@@ -352,13 +336,16 @@
 
               <div class="form-group">
                 <label class="form-label">Platform Name</label>
-                <input type="text" class="form-input" value="CloudLearn LMS (Learner Management System)" readonly style="opacity: 0.8;">
+                <input type="text" class="form-input" value="CloudLearn LMS (Learner Management System)" readonly
+                  style="opacity: 0.8;">
               </div>
 
               <div class="form-group">
                 <label class="form-label">Password Policy</label>
-                <div style="font-size: 13px; color: var(--text-muted); background: var(--bg-input); padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                  🔒 <strong>Strict Approval Enabled:</strong> Facilitators and Students must submit an approval request before updating account passwords. Administrators verify and approve all requests directly.
+                <div
+                  style="font-size: 13px; color: var(--text-muted); background: var(--bg-input); padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                  🔒 <strong>Strict Approval Enabled:</strong> Facilitators and Students must submit an approval request
+                  before updating account passwords. Administrators verify and approve all requests directly.
                 </div>
               </div>
 
@@ -368,18 +355,23 @@
             </form>
 
             <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border-color);">
-              <h3 style="font-size: 16px; margin-bottom: 8px; color: var(--text-heading);">🌐 GitHub Pages Multi-User Sync & Backup</h3>
+              <h3 style="font-size: 16px; margin-bottom: 8px; color: var(--text-heading);">🌐 GitHub Pages Multi-User
+                Sync & Backup</h3>
               <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
                 Share system state across different devices or backup your platform data.
               </p>
               <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                <button type="button" class="btn-sm btn-approve" onclick="exportPlatformData()" style="padding: 10px 18px;">
+                <button type="button" class="btn-sm btn-approve" onclick="exportPlatformData()"
+                  style="padding: 10px 18px;">
                   📥 Export LMS Data (JSON)
                 </button>
-                <button type="button" class="btn-sm btn-approve" onclick="document.getElementById('importDataFileInput').click()" style="padding: 10px 18px; background: rgba(59, 130, 246, 0.15); color: var(--blue-light); border-color: rgba(59, 130, 246, 0.3);">
+                <button type="button" class="btn-sm btn-approve"
+                  onclick="document.getElementById('importDataFileInput').click()"
+                  style="padding: 10px 18px; background: rgba(59, 130, 246, 0.15); color: var(--blue-light); border-color: rgba(59, 130, 246, 0.3);">
                   📤 Import LMS Data (JSON)
                 </button>
-                <input type="file" id="importDataFileInput" accept=".json" style="display: none;" onchange="importPlatformData(event)">
+                <input type="file" id="importDataFileInput" accept=".json" style="display: none;"
+                  onchange="importPlatformData(event)">
               </div>
             </div>
           </div>
@@ -421,7 +413,10 @@
 
         <div class="form-group">
           <label class="form-label" for="newUserTrack">Cloud Track / Specialization</label>
-          <input type="text" id="newUserTrack" class="form-input" value="Cloud Admin" readonly style="background: var(--bg-card); opacity: 0.9;">
+          <select id="newUserTrack" class="form-select" required>
+            <option value="Cloud Admin" selected>Cloud Admin</option>
+            <option value="Technical Support">Technical Support</option>
+          </select>
         </div>
 
         <div class="form-group">
@@ -489,20 +484,16 @@
       document.getElementById('createCourseForm').addEventListener('submit', (e) => {
         e.preventDefault();
         const title = document.getElementById('courseTitleInput').value.trim();
-        const code = document.getElementById('courseCodeInput').value.trim();
         const track = document.getElementById('courseTrackSelect').value;
         const facSelect = document.getElementById('courseFacilitatorSelect');
         const facId = facSelect.value;
         const facName = facSelect.options[facSelect.selectedIndex].text;
-        const duration = document.getElementById('courseDurationInput').value.trim();
 
         CloudStore.addCourse({
           title: title,
-          code: code,
           track: track || 'Cloud Admin',
           facilitatorId: facId,
-          facilitatorName: facName,
-          duration: duration
+          facilitatorName: facName
         });
 
         showToast(`Course "${title}" created successfully!`, 'success');
@@ -590,23 +581,6 @@
           </tr>
         `).join('');
       }
-
-      // Render dashboard courses preview
-      const previewEl = document.getElementById('dashCoursesPreview');
-      previewEl.innerHTML = courses.slice(0, 3).map(c => `
-        <div class="course-card">
-          <span class="badge badge-orange course-track-chip">${escapeHtml(c.track)}</span>
-          <div class="course-card-body">
-            <div class="course-code">${escapeHtml(c.code)}</div>
-            <h3 class="course-title">${escapeHtml(c.title)}</h3>
-            ${c.description ? `<p class="course-desc">${escapeHtml(c.description)}</p>` : ''}
-          </div>
-          <div class="course-meta">
-            <span>👨‍🏫 ${escapeHtml(c.facilitatorName)}</span>
-            <span>⏱️ ${escapeHtml(c.duration)}</span>
-          </div>
-        </div>
-      `).join('');
     }
 
     // Render Users Table
@@ -649,7 +623,7 @@
     }
 
     // Delete User
-    window.deleteUserAccount = function(userId) {
+    window.deleteUserAccount = function (userId) {
       if (confirm('Are you sure you want to remove this user from the system?')) {
         CloudStore.deleteUser(userId);
         showToast('User removed from system.', 'warning');
@@ -706,7 +680,7 @@
     }
 
     // Approve / Reject Handlers
-    window.approveRequest = function(reqId) {
+    window.approveRequest = function (reqId) {
       const res = CloudStore.approvePasswordRequest(reqId, currentUser.name);
       if (res) {
         showToast(`Approved password change permission for ${res.userName}!`, 'success');
@@ -714,7 +688,7 @@
       }
     };
 
-    window.rejectRequest = function(reqId) {
+    window.rejectRequest = function (reqId) {
       const res = CloudStore.rejectPasswordRequest(reqId, currentUser.name);
       if (res) {
         showToast(`Rejected password change request for ${res.userName}.`, 'warning');
@@ -737,7 +711,6 @@
         <div class="course-card">
           <span class="badge badge-orange course-track-chip">${escapeHtml(c.track)}</span>
           <div class="course-card-body">
-            <div class="course-code">${escapeHtml(c.code)}</div>
             <h3 class="course-title">${escapeHtml(c.title)}</h3>
             ${c.description ? `<p class="course-desc">${escapeHtml(c.description)}</p>` : ''}
           </div>
@@ -779,7 +752,7 @@
       reader.readAsText(file);
     };
 
-    window.deleteCourseEntry = function(courseId) {
+    window.deleteCourseEntry = function (courseId) {
       if (confirm('Are you sure you want to remove this course?')) {
         CloudStore.deleteCourse(courseId);
         showToast('Course removed.', 'warning');
@@ -797,4 +770,5 @@
     }
   </script>
 </body>
+
 </html>

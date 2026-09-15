@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,10 @@
   <link rel="stylesheet" href="../css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
 </head>
+
 <body data-theme="dark">
 
   <div class="app-container">
@@ -177,7 +180,8 @@
                 <h2 class="panel-title">Assigned Cloud Curricula</h2>
                 <p class="panel-subtitle">Courses where you are designated as Lead Facilitator</p>
               </div>
-              <button class="btn-primary btn-orange" style="width: auto; padding: 9px 18px; font-size: 13px;" onclick="openModal('modalUploadMaterial')">
+              <button class="btn-primary btn-orange" style="width: auto; padding: 9px 18px; font-size: 13px;"
+                onclick="openModal('modalUploadMaterial')">
                 + Add Course Material
               </button>
             </div>
@@ -277,7 +281,8 @@
                   <h2 class="panel-title">Active Assessments & Workbooks</h2>
                   <p class="panel-subtitle">Cloud architecture assignments and hands-on lab workbooks</p>
                 </div>
-                <button class="btn-primary btn-orange" style="width: auto; padding: 9px 18px; font-size: 13px;" onclick="openModal('modalCreateAssessment')">
+                <button class="btn-primary btn-orange" style="width: auto; padding: 9px 18px; font-size: 13px;"
+                  onclick="openModal('modalCreateAssessment')">
                   + Create Assessment / Workbook
                 </button>
               </div>
@@ -294,7 +299,8 @@
               <div class="panel-header">
                 <div>
                   <h2 class="panel-title">Student Submissions Review</h2>
-                  <p class="panel-subtitle">Review submitted workbooks, provide feedback remarks, and update status (No grading)</p>
+                  <p class="panel-subtitle">Review submitted workbooks, provide feedback remarks, and update status (No
+                    grading)</p>
                 </div>
               </div>
 
@@ -346,7 +352,8 @@
 
               <div class="form-group">
                 <label class="form-label" for="facTrackInput">Specialization Track</label>
-                <input type="text" id="facTrackInput" class="form-input" value="Cloud Admin" readonly style="opacity: 0.85; background: var(--bg-card);">
+                <input type="text" id="facTrackInput" class="form-input" value="Cloud Admin" readonly
+                  style="opacity: 0.85; background: var(--bg-card);">
               </div>
 
               <button type="submit" class="btn-primary" style="width: auto; padding: 11px 24px;">
@@ -362,7 +369,8 @@
                 Password Change Authorization
               </h3>
               <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
-                As a security policy, facilitators and students must receive administrator approval before updating their account password.
+                As a security policy, facilitators and students must receive administrator approval before updating
+                their account password.
               </p>
 
               <!-- Dynamic Permission Banner -->
@@ -375,12 +383,14 @@
                 <form id="changePasswordForm">
                   <div class="form-group">
                     <label class="form-label" for="newFacPassword">New Password</label>
-                    <input type="password" id="newFacPassword" class="form-input" placeholder="Enter new strong password" required autocomplete="new-password">
+                    <input type="password" id="newFacPassword" class="form-input"
+                      placeholder="Enter new strong password" required autocomplete="new-password">
                   </div>
 
                   <div class="form-group">
                     <label class="form-label" for="confirmFacPassword">Confirm New Password</label>
-                    <input type="password" id="confirmFacPassword" class="form-input" placeholder="Confirm new password" required autocomplete="new-password">
+                    <input type="password" id="confirmFacPassword" class="form-input" placeholder="Confirm new password"
+                      required autocomplete="new-password">
                   </div>
 
                   <button type="submit" class="btn-primary btn-orange" style="width: auto; padding: 12px 28px;">
@@ -409,8 +419,9 @@
 
       <form id="createAssessmentForm">
         <div class="form-group">
-          <label class="form-label" for="assTitleInput">Task / Workbook Title</label>
-          <input type="text" id="assTitleInput" class="form-input" placeholder="e.g. Lab Workbook 3: CloudWatch & Prometheus Monitoring" required>
+          <label class="form-label" for="assTitleInput">Title</label>
+          <input type="text" id="assTitleInput" class="form-input"
+            placeholder="e.g. Lab Workbook 3: CloudWatch & Prometheus Monitoring" required>
         </div>
 
         <div class="form-group">
@@ -421,21 +432,15 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="assTypeSelect">Type</label>
-          <select id="assTypeSelect" class="form-select" required>
-            <option value="Workbook">Hands-on Lab Workbook</option>
-            <option value="Assessment">Technical Assessment</option>
-          </select>
-        </div>
-
-        <div class="form-group">
           <label class="form-label" for="assDueDateInput">Submission Due Date</label>
           <input type="date" id="assDueDateInput" class="form-input" required>
         </div>
 
         <div class="form-group">
           <label class="form-label" for="assInstructionsInput">Instructions & Submission Requirements</label>
-          <textarea id="assInstructionsInput" class="form-textarea" rows="4" placeholder="Detail the deliverables: e.g. architecture diagram, code repository link, and verification logs..." required></textarea>
+          <textarea id="assInstructionsInput" class="form-textarea" rows="4"
+            placeholder="Detail the deliverables: e.g. architecture diagram, code repository link, and verification logs..."
+            required></textarea>
         </div>
 
         <button type="submit" class="btn-primary btn-orange">
@@ -455,7 +460,8 @@
       <form id="uploadMaterialForm">
         <div class="form-group">
           <label class="form-label" for="matTitleInput">Document Title</label>
-          <input type="text" id="matTitleInput" class="form-input" placeholder="e.g. AWS Multi-Region Disaster Recovery Whitepaper" required>
+          <input type="text" id="matTitleInput" class="form-input"
+            placeholder="e.g. AWS Multi-Region Disaster Recovery Whitepaper" required>
         </div>
 
         <div class="form-group">
@@ -476,14 +482,18 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="matFileInput">Attach Document File (.pdf, .doc, .docx, .ppt, .zip, .txt, etc.)</label>
-          <input type="file" id="matFileInput" class="form-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.zip,.png,.jpg,.jpeg">
-          <div id="matSelectedFileInfo" style="font-size: 12px; color: var(--blue-light); margin-top: 6px; display: none;"></div>
+          <label class="form-label" for="matFileInput">Attach Document File (.pdf, .doc, .docx, .ppt, .zip, .txt,
+            etc.)</label>
+          <input type="file" id="matFileInput" class="form-input"
+            accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.zip,.png,.jpg,.jpeg">
+          <div id="matSelectedFileInfo"
+            style="font-size: 12px; color: var(--blue-light); margin-top: 6px; display: none;"></div>
         </div>
 
         <div class="form-group">
           <label class="form-label" for="matDescInput">Summary Description</label>
-          <textarea id="matDescInput" class="form-textarea" rows="3" placeholder="Brief summary of what learners will study in this document..." required></textarea>
+          <textarea id="matDescInput" class="form-textarea" rows="3"
+            placeholder="Brief summary of what learners will study in this document..." required></textarea>
         </div>
 
         <button type="submit" class="btn-primary btn-orange">
@@ -502,7 +512,7 @@
 
       <form id="reviewSubmissionForm">
         <input type="hidden" id="revSubId">
-        
+
         <div class="form-group">
           <label class="form-label">Student</label>
           <div id="revStudentName" style="font-weight: 700; color: var(--text-heading);"></div>
@@ -515,7 +525,9 @@
 
         <div class="form-group">
           <label class="form-label">Student Notes & Repo</label>
-          <div id="revStudentNotes" style="font-size: 13px; color: var(--text-muted); background: var(--bg-input); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);"></div>
+          <div id="revStudentNotes"
+            style="font-size: 13px; color: var(--text-muted); background: var(--bg-input); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+          </div>
         </div>
 
         <div class="form-group">
@@ -529,7 +541,8 @@
 
         <div class="form-group">
           <label class="form-label" for="revRemarksInput">Facilitator Feedback Remarks</label>
-          <textarea id="revRemarksInput" class="form-textarea" rows="4" placeholder="Enter remarks on student's architecture, configurations, and answers..." required></textarea>
+          <textarea id="revRemarksInput" class="form-textarea" rows="4"
+            placeholder="Enter remarks on student's architecture, configurations, and answers..." required></textarea>
         </div>
 
         <button type="submit" class="btn-primary btn-orange">
@@ -549,7 +562,8 @@
       <form id="requestPasswordForm">
         <div class="form-group">
           <label class="form-label" for="reqReasonInput">Reason for Password Change</label>
-          <textarea id="reqReasonInput" class="form-textarea" rows="3" placeholder="e.g. Routine credential rotation or updating account security..." required></textarea>
+          <textarea id="reqReasonInput" class="form-textarea" rows="3"
+            placeholder="e.g. Routine credential rotation or updating account security..." required></textarea>
         </div>
 
         <button type="submit" class="btn-primary btn-orange">
@@ -602,16 +616,20 @@
         const title = document.getElementById('assTitleInput').value.trim();
         const courseSelect = document.getElementById('assCourseSelect');
         const courseId = courseSelect.value;
-        const courseTitle = courseSelect.options[courseSelect.selectedIndex].text;
-        const type = document.getElementById('assTypeSelect').value;
+        const courseTitle = courseSelect.options[courseSelect.selectedIndex] ? courseSelect.options[courseSelect.selectedIndex].text : '';
         const dueDate = document.getElementById('assDueDateInput').value;
         const instructions = document.getElementById('assInstructionsInput').value.trim();
+
+        if (!courseId) {
+          showToast('Please select a valid assigned course.', 'error');
+          return;
+        }
 
         CloudStore.addAssessment({
           title,
           courseId,
           courseTitle,
-          type,
+          type: 'Workbook',
           dueDate,
           instructions
         });
@@ -818,13 +836,11 @@
         <div class="course-card">
           <span class="badge badge-orange course-track-chip">${escapeHtml(c.track)}</span>
           <div class="course-card-body">
-            <div class="course-code">${escapeHtml(c.code)}</div>
             <h3 class="course-title">${escapeHtml(c.title)}</h3>
             <p class="course-desc">${escapeHtml(c.description)}</p>
           </div>
           <div class="course-meta">
             <span>👥 ${c.enrolledCount} Learners</span>
-            <span>⏱️ ${escapeHtml(c.duration)}</span>
           </div>
         </div>
       `).join('');
@@ -857,7 +873,7 @@
       `).join('');
     }
 
-    window.downloadMaterialFile = function(id) {
+    window.downloadMaterialFile = function (id) {
       const m = CloudStore.getMaterials().find(x => x.id === id);
       if (m) {
         CloudStore.downloadFile(m.fileName || (m.title + '.pdf'), m.fileData);
@@ -865,7 +881,7 @@
       }
     };
 
-    window.deleteMaterialEntry = function(id) {
+    window.deleteMaterialEntry = function (id) {
       if (confirm('Delete this material document?')) {
         CloudStore.deleteMaterial(id);
         showToast('Document removed.', 'warning');
@@ -889,6 +905,10 @@
 
       tbody.innerHTML = filtered.map(st => {
         const studentSubs = submissions.filter(sub => sub.studentId === st.id);
+        const emailSubject = encodeURIComponent('CloudLearn LMS - Course Work & Submission Follow-up');
+        const emailBody = encodeURIComponent(`Hi ${st.name},\n\nI am contacting you regarding your course work and workbook submissions on CloudLearn LMS.\n\nBest regards,\n${currentUser ? currentUser.name : 'Your Facilitator'}`);
+        const mailtoLink = `mailto:${encodeURIComponent(st.email)}?subject=${emailSubject}&body=${emailBody}`;
+
         return `
           <tr>
             <td><strong>${escapeHtml(st.name)}</strong></td>
@@ -897,7 +917,7 @@
             <td><strong>${studentSubs.length}</strong> Workbooks Submitted</td>
             <td><span class="badge badge-approved">${escapeHtml(st.status || 'Active')}</span></td>
             <td>
-              <a href="mailto:${escapeHtml(st.email)}" class="btn-sm btn-secondary" style="font-size: 11px;">✉️ Message</a>
+              <a href="${mailtoLink}" class="btn-sm btn-secondary" style="font-size: 11px;" title="Send email to ${escapeHtml(st.email)}">✉️ Message</a>
             </td>
           </tr>
         `;
@@ -915,7 +935,6 @@
 
       grid.innerHTML = assessments.map(a => `
         <div class="course-card">
-          <span class="badge badge-orange course-track-chip">${escapeHtml(a.type)}</span>
           <div class="course-card-body">
             <div class="course-code">${escapeHtml(a.courseTitle)}</div>
             <h3 class="course-title">${escapeHtml(a.title)}</h3>
@@ -929,7 +948,7 @@
       `).join('');
     }
 
-    window.deleteAssEntry = function(id) {
+    window.deleteAssEntry = function (id) {
       if (confirm('Delete this assessment/workbook?')) {
         CloudStore.deleteAssessment(id);
         showToast('Assessment deleted.', 'warning');
@@ -976,7 +995,7 @@
       `).join('');
     }
 
-    window.openReviewModal = function(subId) {
+    window.openReviewModal = function (subId) {
       const sub = CloudStore.getSubmissions().find(s => s.id === subId);
       if (!sub) return;
 
@@ -995,7 +1014,7 @@
       openModal('modalReviewSubmission');
     };
 
-    window.downloadStudentSubmissionDoc = function(subId) {
+    window.downloadStudentSubmissionDoc = function (subId) {
       const sub = CloudStore.getSubmissions().find(s => s.id === subId);
       if (sub) {
         CloudStore.downloadFile(sub.fileName || 'student_submission.zip', sub.fileData);
@@ -1003,15 +1022,21 @@
       }
     };
 
-    // Course dropdown selects
+    // Course dropdown selects - only show courses assigned to this teacher
     function populateCourseSelects() {
-      const courses = CloudStore.getCourses();
+      const myCourses = CloudStore.getCoursesForFacilitator(currentUser.id);
       const assSelect = document.getElementById('assCourseSelect');
       const matSelect = document.getElementById('matCourseSelect');
 
-      const options = courses.map(c => `<option value="${c.id}">${escapeHtml(c.title)}</option>`).join('');
-      assSelect.innerHTML = options;
-      matSelect.innerHTML = options;
+      if (myCourses.length === 0) {
+        const emptyOption = '<option value="" disabled selected>No courses assigned to you</option>';
+        assSelect.innerHTML = emptyOption;
+        matSelect.innerHTML = emptyOption;
+      } else {
+        const options = myCourses.map(c => `<option value="${c.id}">${escapeHtml(c.title)}</option>`).join('');
+        assSelect.innerHTML = options;
+        matSelect.innerHTML = options;
+      }
     }
 
     // Password Authorization Workflow
@@ -1095,4 +1120,5 @@
     }
   </script>
 </body>
+
 </html>
