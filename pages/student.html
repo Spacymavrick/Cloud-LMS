@@ -534,6 +534,23 @@
     });
 
     function refreshStudentView() {
+      if (currentUser && !CloudStore.getUserById(currentUser.id)) {
+        CloudStore.logout();
+        return;
+      }
+
+      // If document viewer is open for a deleted material, close it
+      if (currentViewingDoc && !CloudStore.getMaterials().find(m => m.id === currentViewingDoc.id)) {
+        closeModal('modalViewDocument');
+        currentViewingDoc = null;
+      }
+
+      // If submit modal is open for a deleted assessment, close it
+      const activeSubmitAssId = document.getElementById('submitAssessmentId')?.value;
+      if (activeSubmitAssId && !CloudStore.getAssessments().find(a => a.id === activeSubmitAssId)) {
+        closeModal('modalSubmitTask');
+      }
+
       renderDashboard();
       populateCourseFilterDropdown();
       renderMaterials();
@@ -645,7 +662,11 @@
     let currentViewingDoc = null;
     window.openDocumentViewer = function (docId) {
       const doc = CloudStore.getMaterials().find(m => m.id === docId);
-      if (!doc) return;
+      if (!doc) {
+        showToast('This document is no longer available.', 'error');
+        closeModal('modalViewDocument');
+        return;
+      }
       currentViewingDoc = doc;
 
       document.getElementById('viewDocTitle').textContent = doc.title;
@@ -725,7 +746,11 @@
 
     window.openSubmitModal = function (assessmentId) {
       const a = CloudStore.getAssessments().find(item => item.id === assessmentId);
-      if (!a) return;
+      if (!a) {
+        showToast('This assessment/workbook is no longer available.', 'warning');
+        closeModal('modalSubmitTask');
+        return;
+      }
 
       document.getElementById('submitAssessmentId').value = a.id;
       document.getElementById('submitModalTaskTitle').textContent = a.title;

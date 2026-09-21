@@ -776,6 +776,17 @@
     });
 
     function refreshFacilitatorView() {
+      if (currentUser && !CloudStore.getUserById(currentUser.id)) {
+        CloudStore.logout();
+        return;
+      }
+
+      // If review modal is open for a deleted submission, close it
+      const activeRevId = document.getElementById('revSubId')?.value;
+      if (activeRevId && !CloudStore.getSubmissions().find(s => s.id === activeRevId)) {
+        closeModal('modalReviewSubmission');
+      }
+
       renderDashboard();
       renderCourses();
       renderMaterials();
@@ -998,7 +1009,11 @@
 
     window.openReviewModal = function (subId) {
       const sub = CloudStore.getSubmissions().find(s => s.id === subId);
-      if (!sub) return;
+      if (!sub) {
+        showToast('This submission is no longer available.', 'warning');
+        closeModal('modalReviewSubmission');
+        return;
+      }
 
       document.getElementById('revSubId').value = sub.id;
       document.getElementById('revStudentName').textContent = sub.studentName + ' (' + sub.studentEmail + ')';
