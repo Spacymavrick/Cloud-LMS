@@ -337,16 +337,9 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="submitRepoUrl">Git Repository / Architecture Link</label>
-          <input type="url" id="submitRepoUrl" class="form-input"
-            placeholder="https://github.com/your-username/cloud-lab-repo">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="submitFileInput">Upload Work Document (.pdf, .doc, .docx, .zip, .png,
-            etc.)</label>
+          <label class="form-label" for="submitFileInput">Upload Work Document (.pdf, .doc, .docx, .zip)</label>
           <input type="file" id="submitFileInput" class="form-input"
-            accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.zip,.png,.jpg,.jpeg">
+            accept=".pdf,.doc,.docx,.zip" required>
           <div id="submitSelectedFileInfo"
             style="font-size: 12px; color: var(--blue-light); margin-top: 6px; display: none;"></div>
           <input type="hidden" id="submitFileName">
@@ -433,7 +426,6 @@
       document.getElementById('submitTaskForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const assessmentId = document.getElementById('submitAssessmentId').value;
-        const repoUrl = document.getElementById('submitRepoUrl').value.trim();
         const notes = document.getElementById('submitNotes').value.trim();
         const fileInput = document.getElementById('submitFileInput');
         const file = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
@@ -458,7 +450,7 @@
           studentId: currentUser.id,
           studentName: currentUser.name,
           studentEmail: currentUser.email,
-          repoUrl: repoUrl,
+          repoUrl: '',
           fileName: fileName,
           fileSize: fileSize,
           fileData: fileData,
@@ -489,7 +481,7 @@
       if (currentUser) {
         document.getElementById('studNameInput').value = currentUser.name;
         document.getElementById('studEmailInput').value = currentUser.email;
-        document.getElementById('studTrackInput').value = 'Cloud Admin';
+        document.getElementById('studTrackInput').value = currentUser.cloudTrack || 'Cloud Admin';
       }
 
       document.getElementById('studentProfileForm').addEventListener('submit', (e) => {
@@ -552,9 +544,9 @@
 
     // Dashboard
     function renderDashboard() {
-      const courses = CloudStore.getCourses();
-      const materials = CloudStore.getMaterials();
-      const assessments = CloudStore.getAssessments();
+      const courses = CloudStore.getCoursesForStudent(currentUser);
+      const materials = CloudStore.getMaterialsForStudent(currentUser);
+      const assessments = CloudStore.getAssessmentsForStudent(currentUser);
       const mySubmissions = CloudStore.getSubmissionsByStudent(currentUser.id);
 
       const pendingTasksCount = Math.max(0, assessments.length - mySubmissions.length);
@@ -571,7 +563,7 @@
           <span class="badge badge-orange course-track-chip">${escapeHtml(c.track)}</span>
           <div class="course-card-body">
             <h3 class="course-title">${escapeHtml(c.title)}</h3>
-            <p class="course-desc">${escapeHtml(c.description)}</p>
+            <p class="course-desc">${escapeHtml(c.description || 'Comprehensive curriculum modules and hands-on lab projects.')}</p>
           </div>
           <div class="course-meta">
             <span>👨‍🏫 ${escapeHtml(c.facilitatorName)}</span>
@@ -590,8 +582,7 @@
             <td><strong>${escapeHtml(s.assessmentTitle)}</strong></td>
             <td style="font-size: 12px; color: var(--text-muted);">${escapeHtml(s.submittedAt)}</td>
             <td>
-              ${s.repoUrl ? `<a href="${escapeHtml(s.repoUrl)}" target="_blank" style="color: var(--blue-light); font-size: 12px;">🔗 Repo</a> ` : ''}
-              <span style="font-size: 11px; color: var(--text-dim);">📁 ${escapeHtml(s.fileName || 'file.zip')}</span><br>
+              <span style="font-size: 11px; color: var(--text-dim);">📁 ${escapeHtml(s.fileName || 'file.pdf')}</span><br>
               <button class="btn-sm btn-approve" onclick="downloadSubmissionFile('${s.id}')" style="padding: 2px 7px; font-size: 11px; margin-top: 3px;">⬇️ Download Doc</button>
             </td>
             <td>
@@ -613,10 +604,10 @@
 
     // Populate course filter
     function populateCourseFilterDropdown() {
-      const courses = CloudStore.getCourses();
+      const courses = CloudStore.getCoursesForStudent(currentUser);
       const filter = document.getElementById('materialCourseFilter');
       const currentVal = filter.value;
-      filter.innerHTML = `<option value="ALL">All Cloud Courses</option>` +
+      filter.innerHTML = `<option value="ALL">All Enrolled Courses</option>` +
         courses.map(c => `<option value="${c.id}">${escapeHtml(c.title)}</option>`).join('');
       if (currentVal) filter.value = currentVal;
     }
@@ -624,11 +615,13 @@
     // Materials Grid
     function renderMaterials() {
       const filterCourseId = document.getElementById('materialCourseFilter').value;
-      const materials = CloudStore.getMaterialsByCourse(filterCourseId);
+      const materials = (filterCourseId && filterCourseId !== 'ALL')
+        ? CloudStore.getMaterialsByCourse(filterCourseId)
+        : CloudStore.getMaterialsForStudent(currentUser);
       const grid = document.getElementById('studentMaterialsGrid');
 
       if (materials.length === 0) {
-        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-dim); padding: 30px;">No documents found for this course.</div>`;
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-dim); padding: 30px;">No documents found for your courses.</div>`;
         return;
       }
 
@@ -661,17 +654,17 @@
       document.getElementById('viewDocMeta').textContent = `Size: ${doc.fileSize} | Uploaded: ${doc.uploadDate}`;
 
       document.getElementById('viewDocContent').innerHTML = `
-        <h4 style="color: var(--orange-primary); margin-bottom: 8px;">Executive Cloud Summary</h4>
+        <h4 style="color: var(--orange-primary); margin-bottom: 8px;">Executive Summary</h4>
         <p style="margin-bottom: 14px;">${escapeHtml(doc.description)}</p>
         <h4 style="color: var(--blue-light); margin-bottom: 8px;">Curriculum Lab Modules</h4>
         <ul style="padding-left: 20px; line-height: 1.8; color: var(--text-muted);">
-          <li>Module 1: Cloud Architecture Fundamentals & Zero-Trust IAM</li>
-          <li>Module 2: High Availability Design & Resilient Subnet Topologies</li>
-          <li>Module 3: Automated Infrastructure Provisioning (Terraform / CloudFormation)</li>
-          <li>Module 4: Observability, Metrics Collection & Cost Governance</li>
+          <li>Module 1: Architecture & Systems Foundations</li>
+          <li>Module 2: Resilient Infrastructure & Administration Topologies</li>
+          <li>Module 3: Hands-On Troubleshooting & Practical Application</li>
+          <li>Module 4: Observability, Metrics & Performance Governance</li>
         </ul>
         <div style="margin-top: 14px; padding: 10px; background: rgba(56, 189, 248, 0.1); border-left: 3px solid var(--blue-light); border-radius: 4px; font-size: 12px;">
-          📌 <em>Notice: All architectural guidelines are aligned with official AWS / Azure / GCP certification standards.</em>
+          📌 <em>Notice: All technical documentation and materials are officially certified for your enrolled curriculum.</em>
         </div>
       `;
 
@@ -680,7 +673,7 @@
 
     window.simulateDownload = function () {
       if (currentViewingDoc) {
-        CloudStore.downloadFile(currentViewingDoc.fileName || (currentViewingDoc.title + '.pdf'), currentViewingDoc.fileData);
+        CloudStore.downloadFile(currentViewingDoc.fileName || (currentViewingDoc.title + (currentViewingDoc.docType === 'Word Document' ? '.docx' : '.pdf')), currentViewingDoc.fileData);
         showToast(`Downloading "${currentViewingDoc.title}"...`, 'success');
       } else {
         showToast('Document downloaded to your local device!', 'success');
@@ -691,19 +684,19 @@
     window.downloadSubmissionFile = function (subId) {
       const s = CloudStore.getSubmissions().find(item => item.id === subId);
       if (s) {
-        CloudStore.downloadFile(s.fileName || 'my_workbook_submission.zip', s.fileData);
+        CloudStore.downloadFile(s.fileName || 'my_workbook_submission.pdf', s.fileData);
         showToast(`Downloading "${s.fileName || 'submission'}"...`, 'info');
       }
     };
 
     // Available Tasks to Submit
     function renderAvailableTasks() {
-      const assessments = CloudStore.getAssessments();
+      const assessments = CloudStore.getAssessmentsForStudent(currentUser);
       const mySubmissions = CloudStore.getSubmissionsByStudent(currentUser.id);
       const grid = document.getElementById('studentAvailableTasksGrid');
 
       if (assessments.length === 0) {
-        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-dim); padding: 24px;">No active workbooks currently assigned.</div>`;
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-dim); padding: 24px;">No active workbooks currently assigned for your enrolled track.</div>`;
         return;
       }
 
@@ -737,7 +730,7 @@
       document.getElementById('submitAssessmentId').value = a.id;
       document.getElementById('submitModalTaskTitle').textContent = a.title;
       document.getElementById('submitModalInstructions').textContent = a.instructions;
-      document.getElementById('submitFileName').value = a.title.toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 25) + '_submission.zip';
+      document.getElementById('submitFileName').value = a.title.toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 25) + '_submission.pdf';
 
       openModal('modalSubmitTask');
     };
@@ -757,9 +750,9 @@
           <td><strong>${escapeHtml(s.assessmentTitle)}</strong></td>
           <td style="font-size: 12px; color: var(--text-muted);">${escapeHtml(s.submittedAt)}</td>
           <td>
-            ${s.repoUrl ? `<a href="${escapeHtml(s.repoUrl)}" target="_blank" style="color: var(--blue-light); font-size: 12px;">🔗 Repo</a><br>` : ''}
-            <span style="font-size: 11px; color: var(--text-dim);">📁 ${escapeHtml(s.fileName || 'workbook.zip')}</span><br>
-            <button class="btn-sm btn-approve" onclick="downloadSubmissionFile('${s.id}')" style="padding: 2px 7px; font-size: 11px; margin-top: 3px;">⬇️ Download Doc</button>
+            <span style="font-size: 12px; font-weight: 600; color: var(--blue-light);">📁 ${escapeHtml(s.fileName || 'workbook_deliverable.pdf')}</span>
+            ${s.fileSize ? `<span style="font-size: 11px; color: var(--text-dim); margin-left: 4px;">(${escapeHtml(s.fileSize)})</span>` : ''}<br>
+            <button class="btn-sm btn-approve" onclick="downloadSubmissionFile('${s.id}')" style="padding: 2px 8px; font-size: 11px; margin-top: 4px;">⬇️ Download Doc</button>
           </td>
           <td>
             <span class="badge ${s.status === 'Reviewed' ? 'badge-approved' : (s.status === 'Needs Revision' ? 'badge-rejected' : 'badge-pending')}">

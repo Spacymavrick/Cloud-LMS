@@ -475,17 +475,14 @@
           <label class="form-label" for="matTypeSelect">Document Type</label>
           <select id="matTypeSelect" class="form-select" required>
             <option value="PDF Document">PDF Document</option>
-            <option value="Architecture Spec">Architecture Spec & Blueprint</option>
-            <option value="Lab Manual">Lab Manual</option>
-            <option value="Cheatsheet">Cloud Command Cheatsheet</option>
+            <option value="Word Document">Word Document</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="matFileInput">Attach Document File (.pdf, .doc, .docx, .ppt, .zip, .txt,
-            etc.)</label>
+          <label class="form-label" for="matFileInput">Attach Document File (.pdf, .doc, .docx)</label>
           <input type="file" id="matFileInput" class="form-input"
-            accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.zip,.png,.jpg,.jpeg">
+            accept=".pdf,.doc,.docx" required>
           <div id="matSelectedFileInfo"
             style="font-size: 12px; color: var(--blue-light); margin-top: 6px; display: none;"></div>
         </div>
@@ -643,10 +640,15 @@
       // Upload Material Form
       document.getElementById('uploadMaterialForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const titleInput = document.getElementById('matTitleInput');
-        let title = titleInput.value.trim();
         const courseSelect = document.getElementById('matCourseSelect');
         const courseId = courseSelect.value;
+        if (!courseId || courseSelect.selectedIndex === -1) {
+          showToast('Please select a valid assigned course.', 'error');
+          return;
+        }
+
+        const titleInput = document.getElementById('matTitleInput');
+        let title = titleInput.value.trim();
         const courseTitle = courseSelect.options[courseSelect.selectedIndex].text;
         const docType = document.getElementById('matTypeSelect').value;
         const desc = document.getElementById('matDescInput').value.trim();
@@ -654,7 +656,7 @@
         const file = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
 
         let fileData = null;
-        let fileName = file ? file.name : (title + '.pdf');
+        let fileName = file ? file.name : (title + (docType === 'Word Document' ? '.docx' : '.pdf'));
         let fileSize = file ? CloudStore.formatBytes(file.size) : '2.5 MB';
 
         if (file) {
@@ -673,6 +675,7 @@
           title: title || 'Course Learning Document',
           courseId,
           courseTitle,
+          facilitatorId: currentUser ? currentUser.id : '',
           docType,
           description: desc,
           fileName,
@@ -786,21 +789,21 @@
     // Dashboard calculations
     function renderDashboard() {
       const myCourses = CloudStore.getCoursesForFacilitator(currentUser.id);
-      const allStudents = CloudStore.getUsers().filter(u => u.role === 'student');
-      const allAssessments = CloudStore.getAssessments();
-      const allSubmissions = CloudStore.getSubmissions();
+      const myStudents = CloudStore.getStudentsForFacilitator(currentUser.id);
+      const myAssessments = CloudStore.getAssessmentsForFacilitator(currentUser.id);
+      const mySubmissions = CloudStore.getSubmissionsForFacilitator(currentUser.id);
 
       document.getElementById('dashFacCourses').textContent = myCourses.length;
-      document.getElementById('dashFacStudents').textContent = allStudents.length;
-      document.getElementById('dashFacAssessments').textContent = allAssessments.length;
-      document.getElementById('dashFacSubmissions').textContent = allSubmissions.length;
+      document.getElementById('dashFacStudents').textContent = myStudents.length;
+      document.getElementById('dashFacAssessments').textContent = myAssessments.length;
+      document.getElementById('dashFacSubmissions').textContent = mySubmissions.length;
 
       // Recent submissions table
       const recentTable = document.getElementById('dashRecentSubsTable');
-      if (allSubmissions.length === 0) {
+      if (mySubmissions.length === 0) {
         recentTable.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-dim); padding: 24px;">No student submissions yet.</td></tr>`;
       } else {
-        recentTable.innerHTML = allSubmissions.slice(0, 4).map(s => `
+        recentTable.innerHTML = mySubmissions.slice(0, 4).map(s => `
           <tr>
             <td>
               <strong>${escapeHtml(s.studentName)}</strong><br>
@@ -809,8 +812,7 @@
             <td style="font-size: 13px;">${escapeHtml(s.assessmentTitle)}</td>
             <td style="font-size: 12px; color: var(--text-muted);">${escapeHtml(s.submittedAt)}</td>
             <td>
-              ${s.repoUrl ? `<a href="${escapeHtml(s.repoUrl)}" target="_blank" style="color: var(--blue-light); font-size: 12px;">🔗 Code Repo</a><br>` : ''}
-              <span style="font-size: 11px; color: var(--text-dim);">📁 ${escapeHtml(s.fileName || 'file.zip')}</span>
+              <span style="font-size: 11px; color: var(--text-dim);">📁 ${escapeHtml(s.fileName || 'file.pdf')}</span>
             </td>
             <td>
               <span class="badge ${s.status === 'Reviewed' ? 'badge-approved' : 'badge-pending'}">${escapeHtml(s.status)}</span>
@@ -848,10 +850,10 @@
 
     // Materials
     function renderMaterials() {
-      const materials = CloudStore.getMaterials();
+      const materials = CloudStore.getMaterialsForFacilitator(currentUser.id);
       const tbody = document.getElementById('facMaterialsTable');
       if (materials.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-dim); padding: 24px;">No learning materials uploaded.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-dim); padding: 24px;">No learning materials uploaded for your assigned courses yet.</td></tr>`;
         return;
       }
 
@@ -876,7 +878,7 @@
     window.downloadMaterialFile = function (id) {
       const m = CloudStore.getMaterials().find(x => x.id === id);
       if (m) {
-        CloudStore.downloadFile(m.fileName || (m.title + '.pdf'), m.fileData);
+        CloudStore.downloadFile(m.fileName || (m.title + (m.docType === 'Word Document' ? '.docx' : '.pdf')), m.fileData);
         showToast(`Downloading "${m.title}"...`, 'info');
       }
     };
@@ -891,15 +893,15 @@
 
     // Students
     function renderStudentsTable() {
-      const students = CloudStore.getUsers().filter(u => u.role === 'student');
-      const submissions = CloudStore.getSubmissions();
+      const students = CloudStore.getStudentsForFacilitator(currentUser.id);
+      const submissions = CloudStore.getSubmissionsForFacilitator(currentUser.id);
       const search = document.getElementById('studentSearchInput').value.toLowerCase().trim();
 
       const filtered = students.filter(s => s.name.toLowerCase().includes(search) || s.email.toLowerCase().includes(search));
       const tbody = document.getElementById('facStudentsTable');
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-dim); padding: 24px;">No students found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-dim); padding: 24px;">No students found for your class track.</td></tr>`;
         return;
       }
 
@@ -926,10 +928,10 @@
 
     // Assessments & Workbooks
     function renderAssessments() {
-      const assessments = CloudStore.getAssessments();
+      const assessments = CloudStore.getAssessmentsForFacilitator(currentUser.id);
       const grid = document.getElementById('facAssessmentsGrid');
       if (assessments.length === 0) {
-        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-dim); padding: 24px;">No assessments created yet.</div>`;
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-dim); padding: 24px;">No assessments created yet for your assigned courses.</div>`;
         return;
       }
 
@@ -958,7 +960,7 @@
 
     // Submissions Review (NO grading)
     function renderSubmissions() {
-      const submissions = CloudStore.getSubmissions();
+      const submissions = CloudStore.getSubmissionsForFacilitator(currentUser.id);
       document.getElementById('submissionsCountBadge').textContent = submissions.length;
 
       const tbody = document.getElementById('facSubmissionsReviewTable');
@@ -976,8 +978,7 @@
           <td><strong>${escapeHtml(s.assessmentTitle)}</strong></td>
           <td style="font-size: 12px; color: var(--text-muted);">${escapeHtml(s.submittedAt)}</td>
           <td>
-            ${s.repoUrl ? `<a href="${escapeHtml(s.repoUrl)}" target="_blank" style="color: var(--blue-light); font-size: 12px;">🔗 Repository</a><br>` : ''}
-            <span style="font-size: 11px; color: var(--text-dim);">📁 ${escapeHtml(s.fileName || 'workbook_upload.zip')}</span><br>
+            <span style="font-size: 11px; color: var(--text-dim);">📁 ${escapeHtml(s.fileName || 'workbook_upload.pdf')}</span><br>
             <button class="btn-sm btn-approve" onclick="downloadStudentSubmissionDoc('${s.id}')" style="padding: 2px 7px; font-size: 11px; margin-top: 4px;">⬇️ Download Doc</button>
           </td>
           <td>
@@ -1005,8 +1006,7 @@
       document.getElementById('revStudentNotes').innerHTML = `
         <strong>Student Notes:</strong> ${escapeHtml(sub.notes || 'None provided.')}<br>
         <strong>Attached Document:</strong> ${escapeHtml(sub.fileName || 'N/A')}
-        ${sub.fileName ? ` <button type="button" class="btn-sm btn-approve" onclick="downloadStudentSubmissionDoc('${sub.id}')" style="padding: 2px 7px; font-size: 11px; margin-left: 8px;">⬇️ Download File</button>` : ''}<br>
-        ${sub.repoUrl ? `<strong>Repo Link:</strong> <a href="${escapeHtml(sub.repoUrl)}" target="_blank" style="color: var(--blue-light);">${escapeHtml(sub.repoUrl)}</a>` : ''}
+        ${sub.fileName ? ` <button type="button" class="btn-sm btn-approve" onclick="downloadStudentSubmissionDoc('${sub.id}')" style="padding: 2px 7px; font-size: 11px; margin-left: 8px;">⬇️ Download File</button>` : ''}
       `;
       document.getElementById('revStatusSelect').value = sub.status || 'Under Review';
       document.getElementById('revRemarksInput').value = sub.facilitatorRemarks || '';

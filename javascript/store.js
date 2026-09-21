@@ -17,7 +17,7 @@
     REMOTE_SYNC_ENDPOINT: 'cloudlms_sync_endpoint'
   };
 
-  // Pre-seeded Users with unified "Cloud Admin" track
+  // Pre-seeded Users with Cloud Admin and Technical Support tracks
   const DEFAULT_USERS = [
     {
       id: 'u_admin',
@@ -47,7 +47,7 @@
       role: 'teacher',
       status: 'Active',
       joinedDate: '2024-02-15',
-      cloudTrack: 'Cloud Admin'
+      cloudTrack: 'Technical Support'
     },
     {
       id: 'u_emily',
@@ -87,7 +87,7 @@
       role: 'student',
       status: 'Active',
       joinedDate: '2024-03-20',
-      cloudTrack: 'Cloud Admin'
+      cloudTrack: 'Technical Support'
     },
     {
       id: 'u_chloe',
@@ -97,11 +97,11 @@
       role: 'student',
       status: 'Active',
       joinedDate: '2024-04-02',
-      cloudTrack: 'Cloud Admin'
+      cloudTrack: 'Technical Support'
     }
   ];
 
-  // Pre-seeded Courses with unified "Cloud Admin" track
+  // Pre-seeded Courses partitioned by track
   const DEFAULT_COURSES = [
     {
       id: 'c1',
@@ -109,15 +109,15 @@
       track: 'Cloud Admin',
       facilitatorId: 'u_sarah',
       facilitatorName: 'Dr. Sarah Johnson',
-      enrolledCount: 5
+      enrolledCount: 3
     },
     {
       id: 'c2',
       title: 'Google Cloud Platform (GCP) Cloud Engineer',
       track: 'Cloud Admin',
-      facilitatorId: 'u_david',
-      facilitatorName: 'David Chen',
-      enrolledCount: 4
+      facilitatorId: 'u_sarah',
+      facilitatorName: 'Dr. Sarah Johnson',
+      enrolledCount: 3
     },
     {
       id: 'c3',
@@ -125,19 +125,27 @@
       track: 'Cloud Admin',
       facilitatorId: 'u_sarah',
       facilitatorName: 'Dr. Sarah Johnson',
-      enrolledCount: 4
+      enrolledCount: 3
     },
     {
-      id: 'c4',
-      title: 'Cloud DevOps with Docker & Kubernetes',
-      track: 'Cloud Admin',
+      id: 'c_ts1',
+      title: 'CompTIA A+ & IT Technical Support Fundamentals',
+      track: 'Technical Support',
       facilitatorId: 'u_david',
       facilitatorName: 'David Chen',
-      enrolledCount: 5
+      enrolledCount: 2
+    },
+    {
+      id: 'c_ts2',
+      title: 'Enterprise Helpdesk & IT Infrastructure Support',
+      track: 'Technical Support',
+      facilitatorId: 'u_david',
+      facilitatorName: 'David Chen',
+      enrolledCount: 2
     }
   ];
 
-  // Pre-seeded Learning Materials (Documents)
+  // Pre-seeded Learning Materials (Only PDF and Word documents)
   const DEFAULT_MATERIALS = [
     {
       id: 'm1',
@@ -148,7 +156,7 @@
       fileSize: '4.2 MB',
       fileName: 'AWS_Well_Architected_Whitepaper.pdf',
       fileData: null,
-      uploadDate: '2024-03-10',
+      uploadDate: '2026-03-10',
       description: 'Comprehensive guide covering Reliability, Security, Cost Optimization, Operational Excellence, and Performance Efficiency pillars.'
     },
     {
@@ -156,27 +164,15 @@
       courseId: 'c1',
       courseTitle: 'AWS Certified Solutions Architect Associate',
       title: 'Terraform Multi-Tier VPC Reference Architecture',
-      docType: 'Architecture Spec',
+      docType: 'Word Document',
       fileSize: '1.8 MB',
-      fileName: 'Terraform_MultiTier_VPC.tf',
+      fileName: 'Terraform_MultiTier_VPC.docx',
       fileData: null,
-      uploadDate: '2024-03-14',
+      uploadDate: '2026-03-14',
       description: 'Production-ready Infrastructure as Code template detailing Public/Private subnet splits, NAT Gateways, and route tables.'
     },
     {
       id: 'm3',
-      courseId: 'c4',
-      courseTitle: 'Cloud DevOps with Docker & Kubernetes',
-      title: 'Kubernetes Pod Manifests & Kubectl Cheatsheet',
-      docType: 'Lab Manual',
-      fileSize: '2.5 MB',
-      fileName: 'Kubernetes_Lab_Manual.pdf',
-      fileData: null,
-      uploadDate: '2024-03-18',
-      description: 'Essential kubectl commands, YAML manifest structures for Deployments, Services, ConfigMaps, and Ingress routing rules.'
-    },
-    {
-      id: 'm4',
       courseId: 'c3',
       courseTitle: 'Microsoft Azure Administrator & Fundamentals',
       title: 'Azure RBAC and Governance Blueprint',
@@ -184,20 +180,32 @@
       fileSize: '3.1 MB',
       fileName: 'Azure_RBAC_Governance.pdf',
       fileData: null,
-      uploadDate: '2024-03-22',
+      uploadDate: '2026-03-22',
       description: 'Enterprise access controls guide, policy assignment definitions, management group hierarchies, and secure identity federation.'
     },
     {
-      id: 'm5',
-      courseId: 'c2',
-      courseTitle: 'Google Cloud Platform (GCP) Cloud Engineer',
-      title: 'GCP VPC Peering & Cloud NAT Lab Guide',
-      docType: 'Lab Manual',
-      fileSize: '2.9 MB',
-      fileName: 'GCP_VPC_Peering_Guide.pdf',
+      id: 'm_ts1',
+      courseId: 'c_ts1',
+      courseTitle: 'CompTIA A+ & IT Technical Support Fundamentals',
+      title: 'PC Hardware Diagnostics & Assembly Guide',
+      docType: 'PDF Document',
+      fileSize: '3.4 MB',
+      fileName: 'Hardware_Diagnostics_Guide.pdf',
       fileData: null,
-      uploadDate: '2024-03-25',
-      description: 'Hands-on steps for configuring custom VPC networks, firewall rules, Cloud Router, and external gateway connectivity.'
+      uploadDate: '2026-03-15',
+      description: 'Motherboard architecture, POST error codes, power supply diagnostics, and ESD safety protocols.'
+    },
+    {
+      id: 'm_ts2',
+      courseId: 'c_ts2',
+      courseTitle: 'Enterprise Helpdesk & IT Infrastructure Support',
+      title: 'Helpdesk Ticket Resolution & ITIL Procedures',
+      docType: 'Word Document',
+      fileSize: '2.1 MB',
+      fileName: 'Helpdesk_ITIL_Procedures.docx',
+      fileData: null,
+      uploadDate: '2026-03-20',
+      description: 'Standard operating procedures for incident management, escalation matrices, and SLA compliance.'
     }
   ];
 
@@ -210,25 +218,34 @@
       title: 'Lab Workbook 1: Design Multi-AZ High-Availability VPC',
       type: 'Workbook',
       dueDate: '2026-09-25',
-      instructions: 'Submit your network topology diagram, CIDR block allocation rationale, and complete Terraform/CloudFormation code or document.'
+      instructions: 'Submit your network topology diagram, CIDR block allocation rationale, and complete architecture design document.'
     },
     {
       id: 'a2',
-      courseId: 'c4',
-      courseTitle: 'Cloud DevOps with Docker & Kubernetes',
-      title: 'Practical Assessment: Containerized App Deployment to EKS/GKE',
-      type: 'Assessment',
-      dueDate: '2026-09-28',
-      instructions: 'Upload your deployment YAML manifests, ingress rule specifications, and deployment verification logs.'
-    },
-    {
-      id: 'a3',
       courseId: 'c3',
       courseTitle: 'Microsoft Azure Administrator & Fundamentals',
       title: 'Lab Workbook 2: Azure Virtual Network Peering & Security Rules',
       type: 'Workbook',
       dueDate: '2026-10-02',
       instructions: 'Configure Hub-and-Spoke VNet peering, Network Security Group (NSG) rules, and verify connectivity between virtual networks.'
+    },
+    {
+      id: 'a_ts1',
+      courseId: 'c_ts1',
+      courseTitle: 'CompTIA A+ & IT Technical Support Fundamentals',
+      title: 'Lab Workbook 1: Hardware Troubleshooting & OS Installation',
+      type: 'Workbook',
+      dueDate: '2026-09-30',
+      instructions: 'Submit your documented troubleshooting steps, device driver configuration notes, and OS deployment checklist.'
+    },
+    {
+      id: 'a_ts2',
+      courseId: 'c_ts2',
+      courseTitle: 'Enterprise Helpdesk & IT Infrastructure Support',
+      title: 'Practical Assessment: Active Directory User & Group Policy Setup',
+      type: 'Assessment',
+      dueDate: '2026-10-05',
+      instructions: 'Document and upload your Active Directory OU structure, group policy object (GPO) deployment steps, and permissions audit.'
     }
   ];
 
@@ -321,16 +338,81 @@
   function initStore() {
     if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
       localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(DEFAULT_USERS));
+    } else {
+      // Ensure David Chen and Alex/Chloe have correct Technical Support track in existing storage
+      try {
+        const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]');
+        let updated = false;
+        DEFAULT_USERS.forEach(defU => {
+          const existing = users.find(u => u.id === defU.id);
+          if (!existing) {
+            users.push(defU);
+            updated = true;
+          } else if (defU.cloudTrack === 'Technical Support' && existing.cloudTrack !== 'Technical Support') {
+            existing.cloudTrack = 'Technical Support';
+            updated = true;
+          }
+        });
+        if (updated) localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+      } catch (e) { }
     }
+
     if (!localStorage.getItem(STORAGE_KEYS.COURSES)) {
       localStorage.setItem(STORAGE_KEYS.COURSES, JSON.stringify(DEFAULT_COURSES));
+    } else {
+      // Ensure Technical Support courses exist in storage
+      try {
+        const courses = JSON.parse(localStorage.getItem(STORAGE_KEYS.COURSES) || '[]');
+        let updated = false;
+        DEFAULT_COURSES.forEach(defC => {
+          if (!courses.some(c => c.id === defC.id)) {
+            courses.push(defC);
+            updated = true;
+          }
+        });
+        if (updated) localStorage.setItem(STORAGE_KEYS.COURSES, JSON.stringify(courses));
+      } catch (e) { }
     }
+
     if (!localStorage.getItem(STORAGE_KEYS.MATERIALS)) {
       localStorage.setItem(STORAGE_KEYS.MATERIALS, JSON.stringify(DEFAULT_MATERIALS));
+    } else {
+      try {
+        const materials = JSON.parse(localStorage.getItem(STORAGE_KEYS.MATERIALS) || '[]');
+        let updated = false;
+        DEFAULT_MATERIALS.forEach(defM => {
+          if (!materials.some(m => m.id === defM.id)) {
+            materials.push(defM);
+            updated = true;
+          }
+        });
+        // Normalize docType to only 'PDF Document' or 'Word Document'
+        materials.forEach(m => {
+          if (m.docType !== 'PDF Document' && m.docType !== 'Word Document') {
+            m.docType = m.fileName && (m.fileName.endsWith('.doc') || m.fileName.endsWith('.docx')) ? 'Word Document' : 'PDF Document';
+            updated = true;
+          }
+        });
+        if (updated) localStorage.setItem(STORAGE_KEYS.MATERIALS, JSON.stringify(materials));
+      } catch (e) { }
     }
+
     if (!localStorage.getItem(STORAGE_KEYS.ASSESSMENTS)) {
       localStorage.setItem(STORAGE_KEYS.ASSESSMENTS, JSON.stringify(DEFAULT_ASSESSMENTS));
+    } else {
+      try {
+        const assessments = JSON.parse(localStorage.getItem(STORAGE_KEYS.ASSESSMENTS) || '[]');
+        let updated = false;
+        DEFAULT_ASSESSMENTS.forEach(defA => {
+          if (!assessments.some(a => a.id === defA.id)) {
+            assessments.push(defA);
+            updated = true;
+          }
+        });
+        if (updated) localStorage.setItem(STORAGE_KEYS.ASSESSMENTS, JSON.stringify(assessments));
+      } catch (e) { }
     }
+
     // Ensure submissions start empty by default, clearing any old mock submissions (sub_1, sub_2)
     const storedSubs = localStorage.getItem(STORAGE_KEYS.SUBMISSIONS);
     if (!storedSubs || storedSubs.includes('sub_1') || storedSubs.includes('sub_2')) {
@@ -464,6 +546,10 @@
     getCoursesForFacilitator: function (facId) {
       return this.getCourses().filter(c => c.facilitatorId === facId);
     },
+    getCoursesForStudent: function (studentOrTrack) {
+      const track = typeof studentOrTrack === 'string' ? studentOrTrack : (studentOrTrack && studentOrTrack.cloudTrack ? studentOrTrack.cloudTrack : 'Cloud Admin');
+      return this.getCourses().filter(c => c.track === track);
+    },
     addCourse: function (course) {
       const courses = this.getCourses();
       course.id = 'c_' + Date.now();
@@ -487,6 +573,15 @@
       if (!courseId || courseId === 'ALL') return this.getMaterials();
       return this.getMaterials().filter(m => m.courseId === courseId);
     },
+    getMaterialsForFacilitator: function (facId) {
+      const myCourseIds = this.getCoursesForFacilitator(facId).map(c => c.id);
+      return this.getMaterials().filter(m => myCourseIds.includes(m.courseId));
+    },
+    getMaterialsForStudent: function (studentOrTrack) {
+      const track = typeof studentOrTrack === 'string' ? studentOrTrack : (studentOrTrack && studentOrTrack.cloudTrack ? studentOrTrack.cloudTrack : 'Cloud Admin');
+      const trackCourseIds = this.getCourses().filter(c => c.track === track).map(c => c.id);
+      return this.getMaterials().filter(m => trackCourseIds.includes(m.courseId));
+    },
     addMaterial: function (material) {
       const materials = this.getMaterials();
       material.id = 'm_' + Date.now();
@@ -508,6 +603,15 @@
     getAssessmentsByCourse: function (courseId) {
       if (!courseId || courseId === 'ALL') return this.getAssessments();
       return this.getAssessments().filter(a => a.courseId === courseId);
+    },
+    getAssessmentsForFacilitator: function (facId) {
+      const myCourseIds = this.getCoursesForFacilitator(facId).map(c => c.id);
+      return this.getAssessments().filter(a => myCourseIds.includes(a.courseId));
+    },
+    getAssessmentsForStudent: function (studentOrTrack) {
+      const track = typeof studentOrTrack === 'string' ? studentOrTrack : (studentOrTrack && studentOrTrack.cloudTrack ? studentOrTrack.cloudTrack : 'Cloud Admin');
+      const trackCourseIds = this.getCourses().filter(c => c.track === track).map(c => c.id);
+      return this.getAssessments().filter(a => trackCourseIds.includes(a.courseId));
     },
     addAssessment: function (item) {
       const assessments = this.getAssessments();
@@ -531,6 +635,21 @@
     },
     getSubmissionsForAssessment: function (assessmentId) {
       return this.getSubmissions().filter(s => s.assessmentId === assessmentId);
+    },
+    getSubmissionsForFacilitator: function (facId) {
+      const myCourseIds = this.getCoursesForFacilitator(facId).map(c => c.id);
+      const assessments = this.getAssessments();
+      const assessmentCourseMap = {};
+      assessments.forEach(a => { assessmentCourseMap[a.id] = a.courseId; });
+      return this.getSubmissions().filter(s => {
+        const courseId = assessmentCourseMap[s.assessmentId];
+        return myCourseIds.includes(courseId);
+      });
+    },
+    getStudentsForFacilitator: function (facId) {
+      const myCourses = this.getCoursesForFacilitator(facId);
+      const tracks = [...new Set(myCourses.map(c => c.track))];
+      return this.getUsers().filter(u => u.role === 'student' && tracks.includes(u.cloudTrack));
     },
     addSubmission: function (sub) {
       const subs = this.getSubmissions();

@@ -159,14 +159,12 @@
     }, 3200);
   };
 
-  // Sign out listener
+  // Sign out listener - immediate sign out without toast or confirmation popup
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.signout-btn');
     if (btn) {
       e.preventDefault();
-      if (confirm('Are you sure you want to sign out of CloudLearn LMS?')) {
-        window.CloudStore.logout();
-      }
+      window.CloudStore.logout();
     }
   });
 
