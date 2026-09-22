@@ -1444,16 +1444,19 @@ body[data-theme="light"] .toast-progress {
 .toast.success {
   border-left: 4px solid var(--success);
 }
+
 .toast.success .toast-icon-wrap {
   background: var(--success-light);
   border-color: rgba(16, 185, 129, 0.4);
   color: var(--success);
 }
+
 .toast.success .toast-pill {
   background: var(--success-light);
   color: var(--success);
   border: 1px solid rgba(16, 185, 129, 0.4);
 }
+
 .toast.success .toast-progress-bar {
   background: var(--success);
 }
@@ -1462,16 +1465,19 @@ body[data-theme="light"] .toast-progress {
 .toast.error {
   border-left: 4px solid var(--danger);
 }
+
 .toast.error .toast-icon-wrap {
   background: var(--danger-light);
   border-color: rgba(239, 68, 68, 0.4);
   color: var(--danger);
 }
+
 .toast.error .toast-pill {
   background: var(--danger-light);
   color: var(--danger);
   border: 1px solid rgba(239, 68, 68, 0.4);
 }
+
 .toast.error .toast-progress-bar {
   background: var(--danger);
 }
@@ -1480,16 +1486,19 @@ body[data-theme="light"] .toast-progress {
 .toast.warning {
   border-left: 4px solid var(--warning);
 }
+
 .toast.warning .toast-icon-wrap {
   background: var(--warning-light);
   border-color: rgba(245, 158, 11, 0.4);
   color: var(--warning);
 }
+
 .toast.warning .toast-pill {
   background: var(--warning-light);
   color: var(--warning);
   border: 1px solid rgba(245, 158, 11, 0.4);
 }
+
 .toast.warning .toast-progress-bar {
   background: var(--warning);
 }
@@ -1498,16 +1507,19 @@ body[data-theme="light"] .toast-progress {
 .toast.info {
   border-left: 4px solid var(--blue-light);
 }
+
 .toast.info .toast-icon-wrap {
   background: var(--blue-soft);
   border-color: rgba(56, 189, 248, 0.4);
   color: var(--blue-light);
 }
+
 .toast.info .toast-pill {
   background: var(--blue-soft);
   color: var(--blue-light);
   border: 1px solid rgba(56, 189, 248, 0.4);
 }
+
 .toast.info .toast-progress-bar {
   background: var(--blue-light);
 }
@@ -1517,6 +1529,7 @@ body[data-theme="light"] .toast-progress {
     opacity: 0;
     transform: translateY(24px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -1527,6 +1540,7 @@ body[data-theme="light"] .toast-progress {
   from {
     transform: scaleX(1);
   }
+
   to {
     transform: scaleX(0);
   }
