@@ -425,11 +425,16 @@
     logout: function () {
       sessionStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
       localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
-      if (window.location.pathname.includes('/pages/')) {
-        window.location.href = '../index.html';
-      } else {
-        window.location.href = 'index.html';
-      }
+      try {
+        sessionStorage.setItem('lms_pending_toast', JSON.stringify({
+          message: 'You have been successfully signed out.',
+          type: 'logout',
+          title: 'Session Ended'
+        }));
+      } catch (e) { }
+
+      const target = window.location.pathname.includes('/pages/') ? '../index.html' : 'index.html';
+      window.location.href = target;
     },
 
     // Theme Management

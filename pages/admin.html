@@ -624,9 +624,11 @@
 
     // Delete User
     window.deleteUserAccount = function (userId) {
-      if (confirm('Are you sure you want to remove this user from the system?')) {
+      const user = CloudStore.getUserById(userId);
+      const name = user ? user.name : 'User';
+      if (confirm(`Are you sure you want to remove ${name} from the system?`)) {
         CloudStore.deleteUser(userId);
-        showToast('User removed from system.', 'warning');
+        showToast(`User account "${name}" has been permanently removed from the system.`, 'delete', 'User Deleted');
         refreshAll();
       }
     };
@@ -753,9 +755,11 @@
     };
 
     window.deleteCourseEntry = function (courseId) {
-      if (confirm('Are you sure you want to remove this course?')) {
+      const course = CloudStore.getCourses().find(c => c.id === courseId);
+      const title = course ? course.title : 'Course';
+      if (confirm(`Are you sure you want to remove "${title}"?`)) {
         CloudStore.deleteCourse(courseId);
-        showToast('Course removed.', 'warning');
+        showToast(`Course "${title}" and associated data were removed.`, 'delete', 'Course Deleted');
         refreshAll();
       }
     };

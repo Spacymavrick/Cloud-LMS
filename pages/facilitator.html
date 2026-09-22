@@ -905,10 +905,13 @@
       }
     };
 
-    window.deleteMaterialEntry = function (id) {
-      if (confirm('Delete this material document?')) {
+    window.deleteMaterialEntry = async function (id) {
+      const m = CloudStore.getMaterials().find(x => x.id === id);
+      const title = m ? m.title : 'document';
+      const confirmed = await showDeleteConfirm(`Delete material document "${title}"? This cannot be undone.`, `Delete Material Document`);
+      if (confirmed) {
         CloudStore.deleteMaterial(id);
-        showToast('Document removed.', 'warning');
+        showToast(`Material document "${title}" has been deleted.`, 'delete', 'Document Deleted');
         refreshFacilitatorView();
       }
     };
@@ -972,10 +975,13 @@
       `).join('');
     }
 
-    window.deleteAssEntry = function (id) {
-      if (confirm('Delete this assessment/workbook?')) {
+    window.deleteAssEntry = async function (id) {
+      const a = CloudStore.getAssessments().find(x => x.id === id);
+      const title = a ? a.title : 'assessment';
+      const confirmed = await showDeleteConfirm(`Delete this assessment/workbook "${title}"? All student deliverables will also be removed.`, `Delete Assessment`);
+      if (confirmed) {
         CloudStore.deleteAssessment(id);
-        showToast('Assessment deleted.', 'warning');
+        showToast(`Assessment "${title}" has been deleted.`, 'delete', 'Assessment Deleted');
         refreshFacilitatorView();
       }
     };
