@@ -91,7 +91,7 @@
     }
   ];
 
-  // Pre-seeded Learning Materials (PDF & Word only)
+  // Pre-seeded Learning Materials (Word only)
   const DEFAULT_MATERIALS = [
     {
       id: 'm_cloud1',
@@ -99,9 +99,9 @@
       courseTitle: 'Cloud Admin Class',
       facilitatorId: 'u_sarah',
       title: 'Cloud Administration & Systems Guide',
-      docType: 'PDF Document',
+      docType: 'Word Document',
       fileSize: '3.8 MB',
-      fileName: 'Cloud_Administration_Guide.pdf',
+      fileName: 'Cloud_Administration_Guide.docx',
       fileData: null,
       uploadDate: '2026-03-10',
       description: 'Comprehensive manual covering Cloud Infrastructure, IAM Roles, Subnet Networking, and Admin Security.'
@@ -112,9 +112,9 @@
       courseTitle: 'Technical Support Class',
       facilitatorId: 'u_david',
       title: 'Technical Support & Diagnostics Manual',
-      docType: 'PDF Document',
+      docType: 'Word Document',
       fileSize: '3.2 MB',
-      fileName: 'Technical_Support_Manual.pdf',
+      fileName: 'Technical_Support_Manual.docx',
       fileData: null,
       uploadDate: '2026-03-12',
       description: 'Standard operating manual for hardware troubleshooting, OS installations, and helpdesk ticketing.'
@@ -357,13 +357,20 @@
         } catch (e) { }
       }
 
-      // Clean up any orphaned materials, assessments, or submissions if a course or user was deleted
+      // Clean up any orphaned materials, assessments, or submissions if a course or user was deleted, and migrate to Word documents
       try {
         const courses = JSON.parse(localStorage.getItem(STORAGE_KEYS.COURSES) || '[]');
         const courseIds = courses.map(c => c.id);
 
         let materials = JSON.parse(localStorage.getItem(STORAGE_KEYS.MATERIALS) || '[]');
         materials = materials.filter(m => courseIds.includes(m.courseId));
+        materials = materials.map(m => {
+          if (m.docType === 'PDF Document') m.docType = 'Word Document';
+          if (m.fileName && m.fileName.toLowerCase().endsWith('.pdf')) {
+            m.fileName = m.fileName.replace(/\.pdf$/i, '.docx');
+          }
+          return m;
+        });
         localStorage.setItem(STORAGE_KEYS.MATERIALS, JSON.stringify(materials));
 
         let assessments = JSON.parse(localStorage.getItem(STORAGE_KEYS.ASSESSMENTS) || '[]');
@@ -376,6 +383,12 @@
 
         let submissions = JSON.parse(localStorage.getItem(STORAGE_KEYS.SUBMISSIONS) || '[]');
         submissions = submissions.filter(s => assessmentIds.includes(s.assessmentId) && userIds.includes(s.studentId));
+        submissions = submissions.map(s => {
+          if (s.fileName && (s.fileName.toLowerCase().endsWith('.pdf') || s.fileName.toLowerCase().endsWith('.zip'))) {
+            s.fileName = s.fileName.replace(/\.(pdf|zip)$/i, '.docx');
+          }
+          return s;
+        });
         localStorage.setItem(STORAGE_KEYS.SUBMISSIONS, JSON.stringify(submissions));
       } catch (e) { }
     }
@@ -747,7 +760,7 @@
       sub.facilitatorRemarks = sub.facilitatorRemarks || 'Submission received. Awaiting facilitator review.';
 
       if (sub.fileData) {
-        saveFileToDB(sub.id, sub.fileData, sub.fileName, 'application/pdf');
+        saveFileToDB(sub.id, sub.fileData, sub.fileName, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
         sub.hasStoredFile = true;
         if (typeof sub.fileData === 'string' && sub.fileData.length > 50000) {
           sub.fileData = null;
@@ -765,7 +778,7 @@
       sub.facilitatorRemarks = 'Submission received. Awaiting facilitator review.';
 
       if (fileData) {
-        await saveFileToDB(sub.id, fileData, sub.fileName, 'application/pdf');
+        await saveFileToDB(sub.id, fileData, sub.fileName, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
         sub.hasStoredFile = true;
         sub.fileData = (typeof fileData === 'string' && fileData.length < 50000) ? fileData : null;
       }
@@ -902,9 +915,9 @@
       const m = this.getMaterials().find(x => x.id === id);
       if (!m) return;
       const fileData = await this.getFileData(id);
-      const isWord = m.docType === 'Word Document' || (m.fileName && m.fileName.toLowerCase().endsWith('.docx'));
-      const fallbackMime = isWord ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' : 'application/pdf';
-      const fileName = m.fileName || (m.title + (isWord ? '.docx' : '.pdf'));
+      const isDoc = m.fileName && m.fileName.toLowerCase().endsWith('.doc');
+      const fallbackMime = isDoc ? 'application/msword' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+      const fileName = m.fileName || (m.title + '.docx');
       this.downloadFile(fileName, fileData, fallbackMime);
     },
 
@@ -912,12 +925,14 @@
       const s = this.getSubmissions().find(x => x.id === id);
       if (!s) return;
       const fileData = await this.getFileData(id);
-      const fileName = s.fileName || (s.assessmentTitle + '_submission.pdf');
-      this.downloadFile(fileName, fileData, 'application/pdf');
+      const isDoc = s.fileName && s.fileName.toLowerCase().endsWith('.doc');
+      const fallbackMime = isDoc ? 'application/msword' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+      const fileName = s.fileName || (s.assessmentTitle + '_submission.docx');
+      this.downloadFile(fileName, fileData, fallbackMime);
     },
 
-    downloadFile: function (fileName, fileData, fallbackType = 'text/plain') {
-      const name = fileName || 'cloudlearn_document.pdf';
+    downloadFile: function (fileName, fileData, fallbackType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+      const name = fileName || 'cloudlearn_document.docx';
       if (fileData && typeof fileData === 'string' && fileData.startsWith('data:')) {
         try {
           const parts = fileData.split(',');
@@ -966,11 +981,11 @@
         }, 300);
         return;
       } else {
-        const isWord = name.toLowerCase().endsWith('.docx') || name.toLowerCase().endsWith('.doc');
-        const ext = isWord ? '.docx' : (name.toLowerCase().endsWith('.pdf') ? '.pdf' : '.txt');
+        const isDoc = name.toLowerCase().endsWith('.doc');
+        const ext = isDoc ? '.doc' : '.docx';
         const finalName = name.includes('.') ? name : (name + ext);
-        const sampleText = `==========================================================\nCloudLearn LMS - Official Learning Material\n==========================================================\nFile Name: ${name}\nGenerated: ${new Date().toLocaleString()}\nPlatform: CloudLearn LMS Cloud Admin & Technical Support\n==========================================================\nThis document is verified and retrieved from CloudLearn LMS storage.\n`;
-        const blob = new Blob([sampleText], { type: isWord ? 'application/msword' : 'application/pdf' });
+        const sampleText = `==========================================================\nCloudLearn LMS - Official Learning Material\n==========================================================\nFile Name: ${finalName}\nGenerated: ${new Date().toLocaleString()}\nPlatform: CloudLearn LMS Cloud Admin & Technical Support\n==========================================================\nThis Word document is verified and retrieved from CloudLearn LMS storage.\n`;
+        const blob = new Blob([sampleText], { type: isDoc ? 'application/msword' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.style.display = 'none';

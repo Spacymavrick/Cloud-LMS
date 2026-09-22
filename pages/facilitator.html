@@ -474,15 +474,14 @@
         <div class="form-group">
           <label class="form-label" for="matTypeSelect">Document Type</label>
           <select id="matTypeSelect" class="form-select" required>
-            <option value="PDF Document">PDF Document</option>
-            <option value="Word Document">Word Document</option>
+            <option value="Word Document" selected>Word Document (.docx / .doc)</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="matFileInput">Attach Document File (.pdf, .doc, .docx)</label>
+          <label class="form-label" for="matFileInput">Attach Document File (.doc, .docx)</label>
           <input type="file" id="matFileInput" class="form-input"
-            accept=".pdf,.doc,.docx" required>
+            accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required>
           <div id="matSelectedFileInfo"
             style="font-size: 12px; color: var(--blue-light); margin-top: 6px; display: none;"></div>
         </div>
@@ -655,8 +654,13 @@
         const fileInput = document.getElementById('matFileInput');
         const file = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
 
+        if (file && !/\.(docx?|doc)$/i.test(file.name)) {
+          showToast('Only Word documents (.doc, .docx) are allowed.', 'error');
+          return;
+        }
+
         let fileData = null;
-        let fileName = file ? file.name : (title + (docType === 'Word Document' ? '.docx' : '.pdf'));
+        let fileName = file ? file.name : (title + '.docx');
         let fileSize = file ? CloudStore.formatBytes(file.size) : '2.5 MB';
 
         if (file) {
@@ -695,6 +699,13 @@
         const file = e.target.files[0];
         const infoEl = document.getElementById('matSelectedFileInfo');
         if (file) {
+          const isWord = /\.(docx?|doc)$/i.test(file.name);
+          if (!isWord) {
+            showToast('Only Word documents (.doc, .docx) are allowed.', 'error');
+            e.target.value = '';
+            infoEl.style.display = 'none';
+            return;
+          }
           infoEl.textContent = `📎 Selected File: ${file.name} (${CloudStore.formatBytes(file.size)})`;
           infoEl.style.display = 'block';
           const titleInput = document.getElementById('matTitleInput');
@@ -823,7 +834,7 @@
             <td style="font-size: 13px;">${escapeHtml(s.assessmentTitle)}</td>
             <td style="font-size: 12px; color: var(--text-muted);">${escapeHtml(s.submittedAt)}</td>
             <td>
-              <span style="font-size: 11px; color: var(--text-dim);">📁 ${escapeHtml(s.fileName || 'file.pdf')}</span>
+              <span style="font-size: 11px; color: var(--text-dim);">📁 ${escapeHtml(s.fileName || 'file.docx')}</span>
             </td>
             <td>
               <span class="badge ${s.status === 'Reviewed' ? 'badge-approved' : 'badge-pending'}">${escapeHtml(s.status)}</span>
@@ -889,7 +900,7 @@
     window.downloadMaterialFile = function (id) {
       const m = CloudStore.getMaterials().find(x => x.id === id);
       if (m) {
-        CloudStore.downloadFile(m.fileName || (m.title + (m.docType === 'Word Document' ? '.docx' : '.pdf')), m.fileData);
+        CloudStore.downloadFile(m.fileName || (m.title + '.docx'), m.fileData);
         showToast(`Downloading "${m.title}"...`, 'info');
       }
     };
@@ -989,7 +1000,7 @@
           <td><strong>${escapeHtml(s.assessmentTitle)}</strong></td>
           <td style="font-size: 12px; color: var(--text-muted);">${escapeHtml(s.submittedAt)}</td>
           <td>
-            <span style="font-size: 11px; color: var(--text-dim);">📁 ${escapeHtml(s.fileName || 'workbook_upload.pdf')}</span><br>
+            <span style="font-size: 11px; color: var(--text-dim);">📁 ${escapeHtml(s.fileName || 'workbook_upload.docx')}</span><br>
             <button class="btn-sm btn-approve" onclick="downloadStudentSubmissionDoc('${s.id}')" style="padding: 2px 7px; font-size: 11px; margin-top: 4px;">⬇️ Download Doc</button>
           </td>
           <td>
@@ -1032,7 +1043,7 @@
     window.downloadStudentSubmissionDoc = function (subId) {
       const sub = CloudStore.getSubmissions().find(s => s.id === subId);
       if (sub) {
-        CloudStore.downloadFile(sub.fileName || 'student_submission.zip', sub.fileData);
+        CloudStore.downloadFile(sub.fileName || 'student_submission.docx', sub.fileData);
         showToast(`Downloading "${sub.fileName || 'submission file'}"...`, 'info');
       }
     };

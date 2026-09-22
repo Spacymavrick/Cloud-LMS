@@ -337,9 +337,9 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="submitFileInput">Upload Work Document (.pdf, .doc, .docx, .zip)</label>
+          <label class="form-label" for="submitFileInput">Upload Work Document (.doc, .docx)</label>
           <input type="file" id="submitFileInput" class="form-input"
-            accept=".pdf,.doc,.docx,.zip" required>
+            accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required>
           <div id="submitSelectedFileInfo"
             style="font-size: 12px; color: var(--blue-light); margin-top: 6px; display: none;"></div>
           <input type="hidden" id="submitFileName">
@@ -363,7 +363,7 @@
   <div class="modal-overlay" id="modalViewDocument">
     <div class="modal-box" style="max-width: 650px;">
       <button class="modal-close-btn" onclick="closeModal('modalViewDocument')">&times;</button>
-      <span class="badge badge-orange" id="viewDocTypeBadge" style="margin-bottom: 10px;">PDF Document</span>
+      <span class="badge badge-orange" id="viewDocTypeBadge" style="margin-bottom: 10px;">Word Document</span>
       <h3 class="modal-title" id="viewDocTitle">Document Title</h3>
       <p class="modal-subtitle" id="viewDocCourse">Course Title</p>
 
@@ -430,8 +430,13 @@
         const fileInput = document.getElementById('submitFileInput');
         const file = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
 
+        if (file && !/\.(docx?|doc)$/i.test(file.name)) {
+          showToast('Only Word documents (.doc, .docx) are allowed.', 'error');
+          return;
+        }
+
         let fileData = null;
-        let fileName = file ? file.name : (document.getElementById('submitFileName').value.trim() || 'workbook_deliverable.pdf');
+        let fileName = file ? file.name : (document.getElementById('submitFileName').value.trim() || 'workbook_deliverable.docx');
         let fileSize = file ? CloudStore.formatBytes(file.size) : '1.2 MB';
 
         if (file) {
@@ -469,6 +474,14 @@
         const file = e.target.files[0];
         const infoEl = document.getElementById('submitSelectedFileInfo');
         if (file) {
+          const isWord = /\.(docx?|doc)$/i.test(file.name);
+          if (!isWord) {
+            showToast('Only Word documents (.doc, .docx) are allowed.', 'error');
+            e.target.value = '';
+            infoEl.style.display = 'none';
+            document.getElementById('submitFileName').value = '';
+            return;
+          }
           infoEl.textContent = `📎 Selected: ${file.name} (${CloudStore.formatBytes(file.size)})`;
           infoEl.style.display = 'block';
           document.getElementById('submitFileName').value = file.name;
@@ -599,7 +612,7 @@
             <td><strong>${escapeHtml(s.assessmentTitle)}</strong></td>
             <td style="font-size: 12px; color: var(--text-muted);">${escapeHtml(s.submittedAt)}</td>
             <td>
-              <span style="font-size: 11px; color: var(--text-dim);">📁 ${escapeHtml(s.fileName || 'file.pdf')}</span><br>
+              <span style="font-size: 11px; color: var(--text-dim);">📁 ${escapeHtml(s.fileName || 'file.docx')}</span><br>
               <button class="btn-sm btn-approve" onclick="downloadSubmissionFile('${s.id}')" style="padding: 2px 7px; font-size: 11px; margin-top: 3px;">⬇️ Download Doc</button>
             </td>
             <td>
@@ -676,17 +689,7 @@
 
       document.getElementById('viewDocContent').innerHTML = `
         <h4 style="color: var(--orange-primary); margin-bottom: 8px;">Executive Summary</h4>
-        <p style="margin-bottom: 14px;">${escapeHtml(doc.description)}</p>
-        <h4 style="color: var(--blue-light); margin-bottom: 8px;">Curriculum Lab Modules</h4>
-        <ul style="padding-left: 20px; line-height: 1.8; color: var(--text-muted);">
-          <li>Module 1: Architecture & Systems Foundations</li>
-          <li>Module 2: Resilient Infrastructure & Administration Topologies</li>
-          <li>Module 3: Hands-On Troubleshooting & Practical Application</li>
-          <li>Module 4: Observability, Metrics & Performance Governance</li>
-        </ul>
-        <div style="margin-top: 14px; padding: 10px; background: rgba(56, 189, 248, 0.1); border-left: 3px solid var(--blue-light); border-radius: 4px; font-size: 12px;">
-          📌 <em>Notice: All technical documentation and materials are officially certified for your enrolled curriculum.</em>
-        </div>
+        <p style="margin-bottom: 0; line-height: 1.7;">${escapeHtml(doc.description)}</p>
       `;
 
       openModal('modalViewDocument');
@@ -694,7 +697,7 @@
 
     window.simulateDownload = function () {
       if (currentViewingDoc) {
-        CloudStore.downloadFile(currentViewingDoc.fileName || (currentViewingDoc.title + (currentViewingDoc.docType === 'Word Document' ? '.docx' : '.pdf')), currentViewingDoc.fileData);
+        CloudStore.downloadFile(currentViewingDoc.fileName || (currentViewingDoc.title + '.docx'), currentViewingDoc.fileData);
         showToast(`Downloading "${currentViewingDoc.title}"...`, 'success');
       } else {
         showToast('Document downloaded to your local device!', 'success');
@@ -705,7 +708,7 @@
     window.downloadSubmissionFile = function (subId) {
       const s = CloudStore.getSubmissions().find(item => item.id === subId);
       if (s) {
-        CloudStore.downloadFile(s.fileName || 'my_workbook_submission.pdf', s.fileData);
+        CloudStore.downloadFile(s.fileName || 'my_workbook_submission.docx', s.fileData);
         showToast(`Downloading "${s.fileName || 'submission'}"...`, 'info');
       }
     };
@@ -755,7 +758,7 @@
       document.getElementById('submitAssessmentId').value = a.id;
       document.getElementById('submitModalTaskTitle').textContent = a.title;
       document.getElementById('submitModalInstructions').textContent = a.instructions;
-      document.getElementById('submitFileName').value = a.title.toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 25) + '_submission.pdf';
+      document.getElementById('submitFileName').value = a.title.toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 25) + '_submission.docx';
 
       openModal('modalSubmitTask');
     };
@@ -775,7 +778,7 @@
           <td><strong>${escapeHtml(s.assessmentTitle)}</strong></td>
           <td style="font-size: 12px; color: var(--text-muted);">${escapeHtml(s.submittedAt)}</td>
           <td>
-            <span style="font-size: 12px; font-weight: 600; color: var(--blue-light);">📁 ${escapeHtml(s.fileName || 'workbook_deliverable.pdf')}</span>
+            <span style="font-size: 12px; font-weight: 600; color: var(--blue-light);">📁 ${escapeHtml(s.fileName || 'workbook_deliverable.docx')}</span>
             ${s.fileSize ? `<span style="font-size: 11px; color: var(--text-dim); margin-left: 4px;">(${escapeHtml(s.fileSize)})</span>` : ''}<br>
             <button class="btn-sm btn-approve" onclick="downloadSubmissionFile('${s.id}')" style="padding: 2px 8px; font-size: 11px; margin-top: 4px;">⬇️ Download Doc</button>
           </td>
